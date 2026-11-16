@@ -11,5 +11,9 @@ router.get('/saude', asyncHandler(async (req, res) => {
 router.use('/auth', require('./auth.routes'));
 router.use('/clientes', require('./clientes.routes'));
 router.use('/veiculos', require('./veiculos.routes'));
+router.use('/servicos', require('./servicos.routes'));
+router.use('/pecas', require('./pecas.routes'));
+router.use('/os', require('./os.routes'));
+router.use('/usuarios', require('./usuarios.routes'));
 
 module.exports = router;

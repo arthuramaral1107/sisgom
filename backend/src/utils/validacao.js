@@ -61,6 +61,18 @@ function criarValidador() {
       }
       return n;
     },
+    decimal(valor, campo, { obrigatorio = false, min = 0, max = 99999999.99 }) {
+      if (valor === undefined || valor === null || valor === '') {
+        if (obrigatorio) erros.push({ campo, mensagem: 'Campo obrigatório' });
+        return null;
+      }
+      const n = Number(String(valor).replace(',', '.'));
+      if (!Number.isFinite(n) || n < min || n > max) {
+        erros.push({ campo, mensagem: `Valor inválido (mínimo ${min})` });
+        return null;
+      }
+      return Math.round(n * 100) / 100;
+    },
     concluir() {
       if (erros.length) throw new ErroHttp(400, 'Dados inválidos', erros);
     },
@@ -109,6 +121,42 @@ function validarVeiculo(body = {}) {
   return { cliente_id: clienteId, placa, marca, modelo, ano, cor, km_atual: kmAtual };
 }
 
+function validarServico(body = {}) {
+  const v = criarValidador();
+  const descricao = v.texto(body.descricao, 'descricao', { obrigatorio: true, max: 120 });
+  const valorPadrao = v.decimal(body.valor_padrao, 'valor_padrao', { obrigatorio: true });
+  v.concluir();
+  return { descricao, valor_padrao: valorPadrao };
+}
+
+function validarPeca(body = {}) {
+  const v = criarValidador();
+  const codigo = v.texto(body.codigo, 'codigo', { obrigatorio: true, max: 30 });
+  const descricao = v.texto(body.descricao, 'descricao', { obrigatorio: true, max: 120 });
+  const precoVenda = v.decimal(body.preco_venda, 'preco_venda', { obrigatorio: true });
+  const estoque = v.inteiro(body.quantidade_estoque, 'quantidade_estoque', { min: 0 });
+  const minimo = v.inteiro(body.estoque_minimo, 'estoque_minimo', { min: 0 });
+  v.concluir();
+  return {
+    codigo: codigo.toUpperCase(),
+    descricao,
+    preco_venda: precoVenda,
+    quantidade_estoque: estoque ?? 0,
+    estoque_minimo: minimo ?? 0,
+  };
+}
+
+function validarOS(body = {}, { exigeVeiculo = true } = {}) {
+  const v = criarValidador();
+  const veiculoId = v.inteiro(body.veiculo_id, 'veiculo_id', { obrigatorio: exigeVeiculo, min: 1 });
+  const mecanicoId = v.inteiro(body.mecanico_id, 'mecanico_id', { min: 1 });
+  const defeito = v.texto(body.defeito_relatado, 'defeito_relatado', { obrigatorio: true, max: 500 });
+  v.concluir();
+  return { veiculo_id: veiculoId, mecanico_id: mecanicoId, defeito_relatado: defeito };
+}
+
+const STATUS_OS = ['aberta', 'em_andamento', 'finalizada', 'cancelada'];
+
 // Converte :id da rota em número inteiro positivo.
 function idDaRota(req) {
   const id = Number(req.params.id);
@@ -116,4 +164,4 @@ function idDaRota(req) {
   return id;
 }
 
-module.exports = { validarCliente, validarVeiculo, idDaRota };
+module.exports = { validarCliente, validarVeiculo, validarServico, validarPeca, validarOS, STATUS_OS, idDaRota };
