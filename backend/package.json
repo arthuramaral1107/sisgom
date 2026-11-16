@@ -23,5 +23,8 @@
   "private": true,
   "engines": {
     "node": ">=20"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.23.1"
   }
 }
