@@ -129,7 +129,8 @@ async function listar(req, res) {
   `;
 
   const total = (await pool.query(`
-    SELECT COUNT(*)::int AS n ${juncoes} ${filtro}
+    SELECT COUNT(*)::int AS n ${juncoes}
+    ${filtro}
   `, params)).rows[0].n;
 
   const { rows } = await pool.query(`

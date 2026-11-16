@@ -23,7 +23,7 @@ function naoEncontrado(req, res) {
 /* eslint-disable-next-line no-unused-vars */
 function tratarErros(error, req, res, next) {
   if (error instanceof ErroHttp) {
-    return res.status(err.status).json({
+    return res.status(error.status).json({
       erro: error.message,
       detalhes: error.detalhes
     });
