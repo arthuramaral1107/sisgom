@@ -3,8 +3,8 @@ import Campo from '../components/Campo.jsx';
 import { useEffect, useState } from 'react';
 import StatusOS from '../components/StatusOS.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
+import { useNavigate, useParams } from 'react-router-dom';
 import { formatarDataHora, formatarMoeda } from '../hooks.js';
-import { Link, useNavigate, useParams } from 'react-router-dom';
 
 /* Valores iniciais do formulário de serviço da OS */
 const NOVO_SERVICO = {
@@ -26,6 +26,13 @@ const numero = (valor) => (valor === '' ? null : Number(valor));
 export default function OSDetalhe() {
     const { id } = useParams();
     const navegar = useNavigate();
+
+    const voltar = () => {
+        // sem histórico (acesso direto pela URL), cai na lista
+        if (window.history.state?.idx > 0) navegar(-1);
+        else navegar('/os');
+    };
+
     const { pode } = useAuth();
     const [os, setOs] = useState(null);
     const [servicos, setServicos] = useState([]);
@@ -183,12 +190,12 @@ export default function OSDetalhe() {
                     OS #{os.id} <StatusOS status={os.status} />
                 </h2>
 
-                <Link
+                <button
                     className="btn"
-                    to="/os"
+                    onClick={voltar}
                 >
                     Voltar
-                </Link>
+                </button>
             </div>
 
             {erro && (

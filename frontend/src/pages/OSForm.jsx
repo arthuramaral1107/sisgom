@@ -59,7 +59,10 @@ export default function OSForm() {
                 defeito_relatado: dados.defeito_relatado
             });
 
-            navegar(`/os/${nova.id}`);
+            navegar(
+                `/os/${nova.id}`,
+                { replace: true }
+            );
         } catch (error) {
             setErros(detalhesParaObjeto(error.detalhes));
             setErroGeral(error.detalhes.length ? '' : error.message);
