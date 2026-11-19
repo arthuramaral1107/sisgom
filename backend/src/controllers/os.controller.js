@@ -167,6 +167,7 @@ async function recalcularTotal(client, osId) {
 async function listar(req, res) {
   const busca = String(req.query.busca ?? '').trim();
   const status = String(req.query.status ?? '').trim();
+  const veiculoId = parseInt(req.query.veiculo_id, 10);
   const limite = Math.min(Math.max(parseInt(req.query.limite, 10) || 50, 1), 200);
   const pagina = Math.max(parseInt(req.query.pagina, 10) || 1, 1);
 
@@ -179,6 +180,12 @@ async function listar(req, res) {
     params.push(status);
 
     condicoes.push(`os.status = $${params.length}`);
+
+    if (veiculoId) {
+      params.push(veiculoId);
+
+      condicoes.push(`os.veiculo_id = $${params.length}`);
+    }
   }
 
   if (busca) {
