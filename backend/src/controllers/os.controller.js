@@ -163,7 +163,7 @@ async function recalcularTotal(client, osId) {
   `, [osId]);
 };
 
-/* GET /api/os?status=&busca=&pagina=&limite= */
+/* GET /api/os?status=&busca=&veiculo_id=&pagina=&limite= */
 async function listar(req, res) {
   const busca = String(req.query.busca ?? '').trim();
   const status = String(req.query.status ?? '').trim();
@@ -180,12 +180,12 @@ async function listar(req, res) {
     params.push(status);
 
     condicoes.push(`os.status = $${params.length}`);
+  }
 
-    if (veiculoId) {
-      params.push(veiculoId);
+  if (veiculoId) {
+    params.push(veiculoId);
 
-      condicoes.push(`os.veiculo_id = $${params.length}`);
-    }
+    condicoes.push(`os.veiculo_id = $${params.length}`);
   }
 
   if (busca) {
