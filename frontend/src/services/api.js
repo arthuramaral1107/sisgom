@@ -1,12 +1,17 @@
+/* Endereço da API - vem do .env ou usa o padrão local */
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3333/api';
+
+/* Chave onde o token de login fica salvo no navegador */
 const CHAVE_TOKEN = 'sisgom_token';
 
+/* Leitura, gravação e remoção do token de login */
 export const tokenStorage = {
   obter: () => localStorage.getItem(CHAVE_TOKEN),
   salvar: (t) => localStorage.setItem(CHAVE_TOKEN, t),
   limpar: () => localStorage.removeItem(CHAVE_TOKEN)
 };
 
+/* Erro das chamadas à API - guarda o status e os detalhes por campo */
 export class ErroApi extends Error {
   constructor(status, mensagem, detalhes) {
     super(mensagem);
@@ -16,10 +21,13 @@ export class ErroApi extends Error {
   };
 };
 
+/* Ação executada quando a API recusa o token - definida pelo AuthContext */
 let aoExpirarSessao = () => { };
 
+/* Registra a ação executada quando a sessão expira */
 export const definirAoExpirarSessao = (fn) => { aoExpirarSessao = fn; };
 
+/* Faz a requisição à API enviando o token e padroniza os erros */
 async function requisicao(caminho, { metodo = 'GET', corpo, semAuth = false } = {}) {
   const headers = { 'Content-Type': 'application/json' };
   const token = tokenStorage.obter();
@@ -54,6 +62,7 @@ async function requisicao(caminho, { metodo = 'GET', corpo, semAuth = false } = 
   return dados;
 };
 
+/* Monta a query string ignorando parâmetros vazios */
 const qs = (params) => {
   const p = new URLSearchParams();
 
@@ -66,6 +75,7 @@ const qs = (params) => {
   return s ? `?${s}` : '';
 };
 
+/* Chamadas da API agrupadas por recurso */
 export const api = {
   login: (email, senha) => requisicao(
     '/auth/login',

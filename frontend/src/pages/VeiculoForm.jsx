@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { detalhesParaObjeto } from '../hooks.js';
 import { useNavigate, useParams } from 'react-router-dom';
 
+/* Valores iniciais do formulário */
 const VAZIO = {
   cliente_id: '',
   placa: '',
@@ -14,6 +15,7 @@ const VAZIO = {
   km_atual: ''
 };
 
+/* Formulário de cadastro e edição de veículo */
 export default function VeiculoForm() {
   const { id } = useParams();
   const navegar = useNavigate();

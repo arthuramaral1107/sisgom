@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext.jsx';
 import { formatarMoeda, useDebounce } from '../hooks.js';
 import { useCallback, useEffect, useState } from 'react';
 
+/* Quantidade de registros por página */
 const LIMITE = 10;
 
 /* Lista de serviços do catálogo - com busca e paginação */

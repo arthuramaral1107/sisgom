@@ -4,6 +4,7 @@ import Campo from '../components/Campo.jsx';
 import { detalhesParaObjeto } from '../hooks.js';
 import { useNavigate, useParams } from 'react-router-dom';
 
+/* Valores iniciais do formulário */
 const VAZIO = {
   codigo: '',
   descricao: '',

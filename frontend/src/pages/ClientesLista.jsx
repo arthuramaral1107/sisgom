@@ -5,8 +5,10 @@ import Paginacao from '../components/Paginacao.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { useCallback, useEffect, useState } from 'react';
 
+/* Quantidade de registros por página */
 const LIMITE = 10;
 
+/* Lista de clientes - com busca e paginação */
 export default function ClientesLista() {
   const { pode } = useAuth();
   const [busca, setBusca] = useState('');

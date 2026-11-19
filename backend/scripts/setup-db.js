@@ -19,6 +19,7 @@ const arquivos = {
 /* Alvo do script - sem argumento executa schema e seed */
 const alvo = process.argv[2] || 'all';
 
+/* Conecta no banco e executa os arquivos SQL do alvo escolhido */
 (async () => {
   if (!arquivos[alvo]) {
     console.error('Use: schema, seed ou all');

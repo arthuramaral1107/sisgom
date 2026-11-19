@@ -1,3 +1,4 @@
+/* Rodapé de paginação das listagens */
 export default function Paginacao({ pagina, limite, total, aoMudar }) {
   const totalPaginas = Math.max(Math.ceil(total / limite), 1);
   const inicio = total === 0 ? 0 : (pagina - 1) * limite + 1;

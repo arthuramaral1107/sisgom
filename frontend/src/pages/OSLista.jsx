@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext.jsx';
 import { useCallback, useEffect, useState } from 'react';
 import { formatarDataHora, formatarMoeda, useDebounce } from '../hooks.js';
 
+/* Quantidade de registros por página */
 const LIMITE = 10;
 
 /* Lista de ordens de serviço - com busca, filtro por status e paginação */

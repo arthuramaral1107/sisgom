@@ -8,8 +8,10 @@ import {
 } from 'react';
 import { api, tokenStorage, definirAoExpirarSessao } from '../services/api.js';
 
+/* Contexto com o usuário logado e as ações de login e logout */
 const AuthContext = createContext(null);
 
+/* Provedor de autenticação - restaura a sessão pelo token salvo */
 export function AuthProvider({ children }) {
   const [usuario, setUsuario] = useState(null);
   const [carregando, setCarregando] = useState(Boolean(tokenStorage.obter()));
@@ -53,4 +55,5 @@ export function AuthProvider({ children }) {
   </AuthContext.Provider>;
 };
 
+/* Hook para acessar o contexto de autenticação */
 export const useAuth = () => useContext(AuthContext);

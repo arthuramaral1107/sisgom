@@ -1,19 +1,21 @@
+import {
+  Login,
+  OSForm,
+  OSLista,
+  PecaForm,
+  OSDetalhe,
+  PecasLista,
+  ClienteForm,
+  VeiculoForm,
+  ServicoForm,
+  ClientesLista,
+  VeiculosLista,
+  ServicosLista
+} from './pages/index.js';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import Layout from './components/Layout.jsx';
-import RotaProtegida from './components/RotaProtegida.jsx';
-import Login from './pages/Login.jsx';
-import ClientesLista from './pages/ClientesLista.jsx';
-import ClienteForm from './pages/ClienteForm.jsx';
-import VeiculosLista from './pages/VeiculosLista.jsx';
-import VeiculoForm from './pages/VeiculoForm.jsx';
-import ServicosLista from './pages/ServicosLista.jsx';
-import ServicoForm from './pages/ServicoForm.jsx';
-import PecasLista from './pages/PecasLista.jsx';
-import PecaForm from './pages/PecaForm.jsx';
-import OSLista from './pages/OSLista.jsx';
-import OSForm from './pages/OSForm.jsx';
-import OSDetalhe from './pages/OSDetalhe.jsx';
+import { Layout, RotaProtegida } from './components/index.js';
 
+/* Rotas da aplicação - login público e demais telas protegidas pelo layout */
 export default function App() {
   return (
     <Routes>

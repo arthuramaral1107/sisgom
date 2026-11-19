@@ -1,3 +1,4 @@
+/* Texto exibido para cada status da OS */
 const ROTULOS = {
     aberta: 'Aberta',
     em_andamento: 'Em andamento',

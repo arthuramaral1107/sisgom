@@ -1,3 +1,4 @@
+/* Campo de formulário com rótulo e erro - usa input padrão ou o elemento filho */
 export default function Campo({
   rotulo,
   nome,

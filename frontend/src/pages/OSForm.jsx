@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { detalhesParaObjeto } from '../hooks.js';
 
+/* Valores iniciais do formulário */
 const VAZIO = {
     veiculo_id: '',
     mecanico_id: '',

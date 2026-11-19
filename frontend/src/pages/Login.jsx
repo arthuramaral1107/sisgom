@@ -3,6 +3,7 @@ import Campo from '../components/Campo.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { Navigate, useNavigate } from 'react-router-dom';
 
+/* Tela de login */
 export default function Login() {
   const { usuario, entrar } = useAuth();
   const navegar = useNavigate();

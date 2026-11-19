@@ -1,6 +1,7 @@
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 
+/* Estrutura das telas - menu lateral, cabeçalho com o usuário e área de conteúdo */
 export default function Layout() {
   const { usuario, sair } = useAuth();
   const navegar = useNavigate();

@@ -6,12 +6,14 @@ import { useAuth } from '../contexts/AuthContext.jsx';
 import { formatarDataHora, formatarMoeda } from '../hooks.js';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
+/* Valores iniciais do formulário de serviço da OS */
 const NOVO_SERVICO = {
     servico_id: '',
     quantidade: '1',
     valor_unitario: ''
 };
 
+/* Valores iniciais do formulário de peça da OS */
 const NOVA_PECA = {
     peca_id: '',
     quantidade: '1'

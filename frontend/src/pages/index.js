@@ -1,0 +1,12 @@
+export { default as Login } from './Login.jsx';
+export { default as OSForm } from './OSForm.jsx';
+export { default as OSLista } from './OSLista.jsx';
+export { default as PecaForm } from './PecaForm.jsx';
+export { default as OSDetalhe } from './OSDetalhe.jsx';
+export { default as PecasLista } from './PecasLista.jsx';
+export { default as ClienteForm } from './ClienteForm.jsx';
+export { default as VeiculoForm } from './VeiculoForm.jsx';
+export { default as ServicoForm } from './ServicoForm.jsx';
+export { default as ClientesLista } from './ClientesLista.jsx';
+export { default as VeiculosLista } from './VeiculosLista.jsx';
+export { default as ServicosLista } from './ServicosLista.jsx';

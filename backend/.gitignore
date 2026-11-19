@@ -1,3 +1,16 @@
+# Dependências
 node_modules/
+
+# Variáveis de ambiente (nunca subir senhas ou chaves)
 .env
+.env.*
+!.env.example
+
+# Logs
 *.log
+npm-debug.log*
+
+# Sistema e editores
+.DS_Store
+Thumbs.db
+.idea/
