@@ -270,6 +270,12 @@ h2 {
   border: 1px solid #fecdca;
 }
 
+.alerta.info {
+  background: #eff6ff;
+  color: var(--primaria);
+  border: 1px solid #bfdbfe;
+}
+
 /* Formulários */
 .cartao {
   background: #fff;

@@ -141,6 +141,10 @@ export default function VeiculosLista() {
               </td>
 
               <td className="acoes">
+                <Link to={`/os?veiculo=${v.id}`}>
+                  Histórico
+                </Link>
+
                 {podeEditar && <Link to={`/veiculos/${v.id}`}>
                   Editar
                 </Link>}

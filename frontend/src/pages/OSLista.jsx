@@ -1,8 +1,8 @@
-import { Link } from 'react-router-dom';
 import { api } from '../services/api.js';
 import StatusOS from '../components/StatusOS.jsx';
 import Paginacao from '../components/Paginacao.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useCallback, useEffect, useState } from 'react';
 import { formatarDataHora, formatarMoeda, useDebounce } from '../hooks.js';
 
@@ -12,6 +12,9 @@ const LIMITE = 10;
 /* Lista de ordens de serviço - com busca, filtro por status e paginação */
 export default function OSLista() {
     const { pode } = useAuth();
+    const [parametros, setParametros] = useSearchParams();
+    const veiculoId = parametros.get('veiculo') || '';
+    const [veiculo, setVeiculo] = useState(null);
     const [busca, setBusca] = useState('');
     const termo = useDebounce(busca);
     const [status, setStatus] = useState('');
@@ -32,6 +35,7 @@ export default function OSLista() {
             setResp(await api.os.listar({
                 busca: termo,
                 status,
+                veiculo_id: veiculoId,
                 pagina,
                 limite: LIMITE
             }));
@@ -45,6 +49,7 @@ export default function OSLista() {
     }, [
         termo,
         status,
+        veiculoId,
         pagina
     ]);
 
@@ -52,8 +57,21 @@ export default function OSLista() {
 
     useEffect(() => { setPagina(1); }, [
         termo,
-        status
+        status,
+        veiculoId
     ]);
+
+    useEffect(() => {
+        if (!veiculoId) {
+            setVeiculo(null);
+
+            return;
+        }
+
+        api.veiculos.buscar(veiculoId)
+            .then(setVeiculo)
+            .catch(() => setVeiculo(null));
+    }, [veiculoId]);
 
     return (
         <>
@@ -69,6 +87,19 @@ export default function OSLista() {
                     + Nova OS
                 </Link>}
             </div>
+
+            {veiculoId && <div className="alerta info">
+                Histórico do veículo {veiculo
+                    ? `${veiculo.placa} - ${veiculo.marca} ${veiculo.modelo}`
+                    : `#${veiculoId}`}
+
+                <button
+                    className="link"
+                    onClick={() => setParametros({})}
+                >
+                    Ver todas as OS
+                </button>
+            </div>}
 
             <div className="filtros">
                 <input
