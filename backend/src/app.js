@@ -1,10 +1,12 @@
 require('dotenv').config();
+
 const cors = require('cors');
 const helmet = require('helmet');
 const rotas = require('./routes');
 const express = require('express');
 const { naoEncontrado, tratarErros } = require('./middlewares/erros');
 
+/* Aplicação Express - segurança, CORS, JSON, rotas e tratamento de erros */
 const app = express();
 
 app.use(helmet());

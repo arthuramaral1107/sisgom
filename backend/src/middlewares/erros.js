@@ -14,6 +14,7 @@ const asyncHandler = (fn) => (req, res, next) => Promise.resolve(fn(
   next
 )).catch(next);
 
+/* Resposta padrão para rotas inexistentes */
 function naoEncontrado(req, res) {
   res.status(404).json({
     erro: 'Rota não encontrada!'

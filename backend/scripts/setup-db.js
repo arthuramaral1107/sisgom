@@ -6,6 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const { Client } = require('pg');
 
+/* Arquivos SQL executados por cada alvo (schema, seed ou all) */
 const arquivos = {
   schema: ['schema.sql'],
   seed: ['seed.sql'],
@@ -15,6 +16,7 @@ const arquivos = {
   ]
 };
 
+/* Alvo do script - sem argumento executa schema e seed */
 const alvo = process.argv[2] || 'all';
 
 (async () => {

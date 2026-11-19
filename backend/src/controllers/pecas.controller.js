@@ -2,6 +2,7 @@ const pool = require('../config/db');
 const { ErroHttp } = require('../middlewares/erros');
 const { validarPeca, idDaRota } = require('../utils/validacao');
 
+/* Colunas retornadas nas consultas de peças - estoque_baixo é calculado */
 const COLUNAS = `
   id,
   codigo,

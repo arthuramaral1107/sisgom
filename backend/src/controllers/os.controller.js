@@ -10,6 +10,7 @@ const pool = require('../config/db');
 const { comTransacao } = require('../config/db');
 const { ErroHttp } = require('../middlewares/erros');
 
+/* Consulta base da OS - traz veículo, cliente, atendente e mecânico */
 const CABECALHO = `
   SELECT
     os.id,

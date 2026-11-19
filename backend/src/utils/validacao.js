@@ -1,6 +1,9 @@
 const { ErroHttp } = require('../middlewares/erros');
+
+/* Remove tudo que não for dígito */
 const somenteDigitos = (v) => String(v ?? '').replace(/\D/g, '');
 
+/* Valida o CPF pelos dígitos verificadores */
 function cpfValido(c) {
   if (c.length !== 11 || /^(\d)\1{10}$/.test(c)) return false;
 
@@ -15,6 +18,7 @@ function cpfValido(c) {
   return true;
 };
 
+/* Valida o CNPJ pelos dígitos verificadores */
 function cnpjValido(c) {
   if (c.length !== 14 || /^(\d)\1{13}$/.test(c)) return false;
 
@@ -39,6 +43,7 @@ function cnpjValido(c) {
   return c.endsWith(`${d1}${d2}`);
 };
 
+/* Aplica a máscara de CPF ou CNPJ */
 function formatarCpfCnpj(d) {
   return d.length === 11
     ? `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9)}`
@@ -138,6 +143,7 @@ function criarValidador() {
   };
 };
 
+/* Valida e normaliza os dados de cliente */
 function validarCliente(body = {}) {
   const v = criarValidador();
 
@@ -204,6 +210,7 @@ function validarCliente(body = {}) {
   };
 };
 
+/* Valida e normaliza os dados de veículo */
 function validarVeiculo(body = {}) {
   const v = criarValidador();
 
@@ -282,6 +289,7 @@ function validarVeiculo(body = {}) {
   };
 };
 
+/* Valida e normaliza os dados de serviço */
 function validarServico(body = {}) {
   const v = criarValidador();
 
@@ -308,6 +316,7 @@ function validarServico(body = {}) {
   };
 };
 
+/* Valida e normaliza os dados de peça */
 function validarPeca(body = {}) {
   const v = criarValidador();
 
@@ -358,6 +367,7 @@ function validarPeca(body = {}) {
   };
 };
 
+/* Valida os dados da OS - o veículo só é exigido na abertura */
 function validarOS(
   body = {},
   { exigeVeiculo = true } = {}
@@ -397,6 +407,7 @@ function validarOS(
   };
 };
 
+/* Valida o serviço adicionado à OS */
 function validarItemServico(body = {}) {
   const v = criarValidador();
 
@@ -433,6 +444,7 @@ function validarItemServico(body = {}) {
   };
 };
 
+/* Valida a peça adicionada à OS */
 function validarItemPeca(body = {}) {
   const v = criarValidador();
 
@@ -463,6 +475,7 @@ function validarItemPeca(body = {}) {
   };
 };
 
+/* Status possíveis da ordem de serviço */
 const STATUS_OS = [
   'aberta',
   'em_andamento',

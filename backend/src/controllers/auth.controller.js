@@ -6,6 +6,7 @@ const { ErroHttp } = require('../middlewares/erros');
 /* Hash falso para gastar o mesmo tempo quando o e-mail não existe */
 const HASH_FALSO = bcrypt.hashSync('senha-falsa', 10);
 
+/* POST /api/auth/login - valida e-mail e senha e devolve o token */
 async function login(req, res) {
   const email = String(req.body?.email ?? '').trim().toLowerCase();
   const senha = String(req.body?.senha ?? '');
@@ -55,6 +56,7 @@ async function login(req, res) {
   });
 };
 
+/* GET /api/auth/me - dados do usuário logado */
 async function me(req, res) {
   const { rows } = await pool.query(`
     SELECT

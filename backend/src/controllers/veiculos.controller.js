@@ -2,6 +2,7 @@ const pool = require('../config/db');
 const { ErroHttp } = require('../middlewares/erros');
 const { validarVeiculo, idDaRota } = require('../utils/validacao');
 
+/* Consulta base de veículos - já traz o nome do cliente */
 const SELECT = `
   SELECT
     v.id,
@@ -18,6 +19,7 @@ const SELECT = `
   JOIN cliente c ON c.id = v.cliente_id
 `;
 
+/* Confere se o cliente informado existe - senão responde 400 */
 async function garantirCliente(clienteId) {
   const { rowCount } = await pool.query(`
     SELECT 1
