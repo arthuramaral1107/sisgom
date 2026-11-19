@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api.js';
-import { useAuth } from '../contexts/AuthContext.jsx';
 import { useDebounce } from '../hooks.js';
 import Paginacao from '../components/Paginacao.jsx';
+import { useAuth } from '../contexts/AuthContext.jsx';
+import { useCallback, useEffect, useState } from 'react';
 
 const LIMITE = 10;
 
@@ -12,66 +12,166 @@ export default function VeiculosLista() {
   const [busca, setBusca] = useState('');
   const termo = useDebounce(busca);
   const [pagina, setPagina] = useState(1);
-  const [resp, setResp] = useState({ dados: [], total: 0 });
+
+  const [resp, setResp] = useState({
+    dados: [],
+    total: 0
+  });
+
   const [erro, setErro] = useState('');
   const [carregando, setCarregando] = useState(true);
 
   const carregar = useCallback(async () => {
     setCarregando(true);
+
     try {
-      setResp(await api.veiculos.listar({ busca: termo, pagina, limite: LIMITE }));
+      setResp(await api.veiculos.listar({
+        busca: termo,
+        pagina,
+        limite: LIMITE
+      }));
+
       setErro('');
-    } catch (e) {
-      setErro(e.message);
+    } catch (error) {
+      setErro(error.message);
     } finally {
       setCarregando(false);
     }
-  }, [termo, pagina]);
+  }, [
+    termo,
+    pagina
+  ]);
 
   useEffect(() => { carregar(); }, [carregar]);
   useEffect(() => { setPagina(1); }, [termo]);
 
   const excluir = async (v) => {
     if (!window.confirm(`Excluir o veículo ${v.placa}?`)) return;
+
     try {
       await api.veiculos.excluir(v.id);
+
       carregar();
-    } catch (e) {
-      setErro(e.message);
+    } catch (error) {
+      setErro(error.message);
     }
   };
 
-  const podeEditar = pode('ADMIN', 'ATENDENTE');
+  const podeEditar = pode(
+    'ADMIN',
+    'ATENDENTE'
+  );
 
   return (
     <>
       <div className="titulo-linha">
-        <h2>Veículos</h2>
-        {podeEditar && <Link className="btn primario" to="/veiculos/novo">+ Novo veículo</Link>}
+        <h2>
+          Veículos
+        </h2>
+
+        {podeEditar && <Link
+          className="btn primario"
+          to="/veiculos/novo"
+        >
+          + Novo veículo
+        </Link>}
       </div>
-      <input className="busca" placeholder="Buscar por placa, marca ou modelo" value={busca}
-             onChange={(e) => setBusca(e.target.value)} />
-      {erro && <div className="alerta erro">{erro}</div>}
+
+      <input
+        className="busca"
+        placeholder="Buscar por placa, marca ou modelo"
+        value={busca}
+        onChange={(e) => setBusca(e.target.value)}
+      />
+
+      {erro && <div className="alerta erro">
+        {erro}
+      </div>}
+
       <table className="tabela">
         <thead>
-          <tr><th>Placa</th><th>Marca / Modelo</th><th>Ano</th><th>Cor</th><th>Proprietário</th><th /></tr>
+          <tr>
+            <th>
+              Placa
+            </th>
+
+            <th>
+              Marca / Modelo
+            </th>
+
+            <th>
+              Ano
+            </th>
+
+            <th>
+              Cor
+            </th>
+
+            <th>
+              Proprietário
+            </th>
+
+            <th />
+          </tr>
         </thead>
+
         <tbody>
           {resp.dados.map((v) => (
             <tr key={v.id}>
-              <td>{v.placa}</td><td>{v.marca} {v.modelo}</td><td>{v.ano}</td><td>{v.cor}</td><td>{v.cliente_nome}</td>
+              <td>
+                {v.placa}
+              </td>
+
+              <td>
+                {v.marca} {v.modelo}
+              </td>
+
+              <td>
+                {v.ano}
+              </td>
+
+              <td>
+                {v.cor}
+              </td>
+
+              <td>
+                {v.cliente_nome}
+              </td>
+
               <td className="acoes">
-                {podeEditar && <Link to={`/veiculos/${v.id}`}>Editar</Link>}
-                {pode('ADMIN') && <button className="link perigo" onClick={() => excluir(v)}>Excluir</button>}
+                {podeEditar && <Link to={`/veiculos/${v.id}`}>
+                  Editar
+                </Link>}
+
+                {pode('ADMIN') && <button
+                  className="link perigo"
+                  onClick={() => excluir(v)}
+                >
+                  Excluir
+                </button>}
               </td>
             </tr>
           ))}
+
           {!carregando && resp.dados.length === 0 && (
-            <tr><td colSpan="6" className="vazio">Nenhum veículo encontrado.</td></tr>
+            <tr>
+              <td
+                colSpan="6"
+                className="vazio"
+              >
+                Nenhum veículo encontrado.
+              </td>
+            </tr>
           )}
         </tbody>
       </table>
-      <Paginacao pagina={pagina} limite={LIMITE} total={resp.total} aoMudar={setPagina} />
+
+      <Paginacao
+        pagina={pagina}
+        limite={LIMITE}
+        total={resp.total}
+        aoMudar={setPagina}
+      />
     </>
   );
-}
+};

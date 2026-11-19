@@ -20,8 +20,9 @@ export default function Layout() {
         <nav>
           <NavLink to="/clientes">Clientes</NavLink>
           <NavLink to="/veiculos">Veículos</NavLink>
-          <span className="em-breve">Ordens de Serviço</span>
-          <span className="em-breve">Peças e Serviços</span>
+          <NavLink to="/os">Ordens de Serviço</NavLink>
+          <NavLink to="/servicos">Serviços</NavLink>
+          <NavLink to="/pecas">Peças</NavLink>
         </nav>
         <button className="link-sair" onClick={aoSair}>Sair</button>
       </aside>
