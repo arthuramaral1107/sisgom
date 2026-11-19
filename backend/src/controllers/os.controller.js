@@ -1,7 +1,14 @@
+const {
+  validarOS,
+  validarItemServico,
+  validarItemPeca,
+  STATUS_OS,
+  idDaRota,
+  idParam
+} = require('../utils/validacao');
 const pool = require('../config/db');
 const { comTransacao } = require('../config/db');
 const { ErroHttp } = require('../middlewares/erros');
-const { validarOS, STATUS_OS, idDaRota } = require('../utils/validacao');
 
 const CABECALHO = `
   SELECT
@@ -88,6 +95,71 @@ async function validarMecanico(client, mecanicoId) {
       }]
     );
   }
+};
+
+/* Status em que a OS ainda pode ser alterada */
+const EDITAVEIS = [
+  'aberta',
+  'em_andamento'
+];
+
+/* Transições de status permitidas - a finalização tem regras próprias */
+const TRANSICOES = {
+  aberta: [
+    'em_andamento',
+    'cancelada'
+  ],
+  em_andamento: [
+    'finalizada',
+    'cancelada'
+  ],
+  finalizada: [],
+  cancelada: []
+};
+
+/* Trava a linha da OS durante a transação - evita duas alterações simultâneas */
+async function travarOS(client, id) {
+  const { rows } = await client.query(`
+    SELECT
+      id,
+      status,
+      mecanico_id
+    FROM ordem_servico
+    WHERE id = $1
+    FOR UPDATE
+  `, [id]);
+
+  if (!rows[0]) throw new ErroHttp(404, 'Ordem de serviço não encontrada');
+
+  return rows[0];
+};
+
+/* Bloqueia alterações em OS finalizada ou cancelada */
+function exigirEditavel(os) {
+  if (!EDITAVEIS.includes(os.status)) {
+    throw new ErroHttp(
+      409,
+      `Ordem de serviço ${os.status === 'finalizada' ? 'finalizada' : 'cancelada'} não pode ser alterada`
+    );
+  }
+};
+
+/* Recalcula o valor total da OS a partir dos serviços e das peças */
+async function recalcularTotal(client, osId) {
+  await client.query(`
+    UPDATE ordem_servico
+    SET valor_total =
+      COALESCE((
+        SELECT SUM(quantidade * valor_unitario)
+        FROM os_servico
+        WHERE os_id = $1
+      ), 0) + COALESCE((
+        SELECT SUM(quantidade * valor_unitario)
+        FROM os_peca
+        WHERE os_id = $1
+      ), 0)
+    WHERE id = $1
+  `, [osId]);
 };
 
 /* GET /api/os?status=&busca=&pagina=&limite= */
@@ -204,8 +276,333 @@ async function criar(req, res) {
   res.status(201).json(await carregarOS(pool, id));
 };
 
+/* PUT /api/os/:id - defeito relatado e mecânico responsável */
+async function atualizar(req, res) {
+  const id = idDaRota(req);
+  const d = validarOS(req.body, { exigeVeiculo: false });
+
+  await comTransacao(async (client) => {
+    exigirEditavel(await travarOS(client, id));
+
+    await validarMecanico(client, d.mecanico_id);
+
+    await client.query(`
+      UPDATE ordem_servico
+      SET
+        defeito_relatado = $1,
+        mecanico_id = $2
+      WHERE id = $3
+    `, [
+      d.defeito_relatado,
+      d.mecanico_id,
+      id
+    ]);
+  });
+
+  res.json(await carregarOS(pool, id));
+};
+
+/* DELETE /api/os/:id - apenas OS aberta ou cancelada */
+async function excluir(req, res) {
+  const id = idDaRota(req);
+
+  await comTransacao(async (client) => {
+    const os = await travarOS(client, id);
+
+    if (!['aberta', 'cancelada'].includes(os.status)) {
+      throw new ErroHttp(
+        409,
+        'Só é possível excluir ordens abertas ou canceladas'
+      );
+    }
+
+    await client.query(`
+      DELETE FROM ordem_servico
+      WHERE id = $1
+    `, [id]);
+  });
+
+  res.status(204).end();
+};
+
+/* POST /api/os/:id/servicos */
+async function adicionarServico(req, res) {
+  const id = idDaRota(req);
+  const d = validarItemServico(req.body);
+
+  await comTransacao(async (client) => {
+    exigirEditavel(await travarOS(client, id));
+
+    const servico = await client.query(`
+      SELECT valor_padrao
+      FROM servico
+      WHERE id = $1
+    `, [d.servico_id]);
+
+    if (!servico.rows[0]) {
+      throw new ErroHttp(
+        400,
+        'Dados inválidos',
+        [{
+          campo: 'servico_id',
+          mensagem: 'Serviço não encontrado'
+        }]
+      );
+    }
+
+    // sem valor informado, usa o valor padrão do catálogo
+    const valor = d.valor_unitario ?? servico.rows[0].valor_padrao;
+
+    await client.query(`
+      INSERT INTO os_servico (
+        os_id,
+        servico_id,
+        quantidade,
+        valor_unitario
+      ) VALUES ($1, $2, $3, $4)
+    `, [
+      id,
+      d.servico_id,
+      d.quantidade,
+      valor
+    ]);
+
+    await recalcularTotal(client, id);
+  });
+
+  res.status(201).json(await carregarOS(pool, id));
+};
+
+/* DELETE /api/os/:id/servicos/:itemId */
+async function removerServico(req, res) {
+  const id = idDaRota(req);
+  const itemId = idParam(req, 'itemId');
+
+  await comTransacao(async (client) => {
+    exigirEditavel(await travarOS(client, id));
+
+    const { rowCount } = await client.query(`
+      DELETE FROM os_servico
+      WHERE id = $1 AND os_id = $2
+    `, [itemId, id]);
+
+    if (!rowCount) throw new ErroHttp(404, 'Serviço não encontrado nesta OS');
+
+    await recalcularTotal(client, id);
+  });
+
+  res.json(await carregarOS(pool, id));
+};
+
+/* POST /api/os/:id/pecas - grava o preço de venda atual da peça no item */
+async function adicionarPeca(req, res) {
+  const id = idDaRota(req);
+  const d = validarItemPeca(req.body);
+
+  await comTransacao(async (client) => {
+    exigirEditavel(await travarOS(client, id));
+
+    const peca = await client.query(`
+      SELECT preco_venda
+      FROM peca
+      WHERE id = $1
+    `, [d.peca_id]);
+
+    if (!peca.rows[0]) {
+      throw new ErroHttp(
+        400,
+        'Dados inválidos',
+        [{
+          campo: 'peca_id',
+          mensagem: 'Peça não encontrada'
+        }]
+      );
+    }
+
+    await client.query(`
+      INSERT INTO os_peca (
+        os_id,
+        peca_id,
+        quantidade,
+        valor_unitario
+      ) VALUES ($1, $2, $3, $4)
+    `, [
+      id,
+      d.peca_id,
+      d.quantidade,
+      peca.rows[0].preco_venda
+    ]);
+
+    await recalcularTotal(client, id);
+  });
+
+  res.status(201).json(await carregarOS(pool, id));
+};
+
+/* DELETE /api/os/:id/pecas/:itemId */
+async function removerPeca(req, res) {
+  const id = idDaRota(req);
+  const itemId = idParam(req, 'itemId');
+
+  await comTransacao(async (client) => {
+    exigirEditavel(await travarOS(client, id));
+
+    const { rowCount } = await client.query(`
+      DELETE FROM os_peca
+      WHERE id = $1 AND os_id = $2
+    `, [itemId, id]);
+
+    if (!rowCount) throw new ErroHttp(404, 'Peça não encontrada nesta OS');
+
+    await recalcularTotal(client, id);
+  });
+
+  res.json(await carregarOS(pool, id));
+};
+
+/* Dá baixa no estoque das peças da OS - se faltar alguma, cancela tudo (409) */
+async function baixarEstoque(client, osId) {
+  const { rows: itens } = await client.query(`
+    SELECT
+      peca_id,
+      SUM(quantidade)::int AS qtd
+    FROM os_peca
+    WHERE os_id = $1
+    GROUP BY peca_id
+    ORDER BY peca_id
+  `, [osId]);
+
+  if (!itens.length) return;
+
+  // FOR UPDATE: ninguém altera o estoque dessas peças até o fim da transação
+  const { rows: estoque } = await client.query(`
+    SELECT
+      id,
+      codigo,
+      descricao,
+      quantidade_estoque
+    FROM peca
+    WHERE id = ANY($1)
+    ORDER BY id
+    FOR UPDATE
+  `, [itens.map((item) => item.peca_id)]);
+
+  const porId = new Map(estoque.map((peca) => [peca.id, peca]));
+  const faltas = [];
+
+  for (const item of itens) {
+    const peca = porId.get(item.peca_id);
+
+    if (peca.quantidade_estoque < item.qtd) {
+      faltas.push({
+        campo: 'peca',
+        mensagem: `${peca.codigo} - ${peca.descricao}: estoque ${peca.quantidade_estoque}, necessário ${item.qtd}`
+      });
+    }
+  }
+
+  if (faltas.length) {
+    throw new ErroHttp(
+      409,
+      'Estoque insuficiente para finalizar a OS',
+      faltas
+    );
+  }
+
+  for (const item of itens) {
+    await client.query(`
+      UPDATE peca
+      SET quantidade_estoque = quantidade_estoque - $1
+      WHERE id = $2
+    `, [
+      item.qtd,
+      item.peca_id
+    ]);
+  }
+};
+
+/* PATCH /api/os/:id/status - { "status": "em_andamento" | "finalizada" | "cancelada" } */
+async function mudarStatus(req, res) {
+  const id = idDaRota(req);
+  const novo = String(req.body?.status ?? '');
+
+  if (!STATUS_OS.includes(novo)) {
+    throw new ErroHttp(
+      400,
+      'Dados inválidos',
+      [{
+        campo: 'status',
+        mensagem: 'Status inválido'
+      }]
+    );
+  }
+
+  if (novo === 'cancelada' && req.usuario.perfil === 'MECANICO') {
+    throw new ErroHttp(403, 'Sem permissão para cancelar ordens de serviço');
+  }
+
+  await comTransacao(async (client) => {
+    const os = await travarOS(client, id);
+
+    if (!TRANSICOES[os.status].includes(novo)) {
+      throw new ErroHttp(
+        409,
+        `Transição inválida: de "${os.status}" para "${novo}"`
+      );
+    }
+
+    // mecânico que inicia uma OS sem responsável assume ela
+    if (novo === 'em_andamento' && !os.mecanico_id && req.usuario.perfil === 'MECANICO') {
+      await client.query(`
+        UPDATE ordem_servico
+        SET mecanico_id = $1
+        WHERE id = $2
+      `, [req.usuario.id, id]);
+    }
+
+    if (novo === 'finalizada') {
+      const itens = await client.query(`
+        SELECT
+          (SELECT COUNT(*) FROM os_servico WHERE os_id = $1) +
+          (SELECT COUNT(*) FROM os_peca WHERE os_id = $1) AS n
+      `, [id]);
+
+      if (Number(itens.rows[0].n) === 0) {
+        throw new ErroHttp(
+          409,
+          'Adicione ao menos um serviço ou peça antes de finalizar a OS'
+        );
+      }
+
+      await baixarEstoque(client, id);
+      await recalcularTotal(client, id);
+
+      await client.query(`
+        UPDATE ordem_servico
+        SET data_fechamento = NOW()
+        WHERE id = $1
+      `, [id]);
+    }
+
+    await client.query(`
+      UPDATE ordem_servico
+      SET status = $1
+      WHERE id = $2
+    `, [novo, id]);
+  });
+
+  res.json(await carregarOS(pool, id));
+};
+
 module.exports = {
   listar,
   buscar,
-  criar
+  criar,
+  atualizar,
+  excluir,
+  adicionarServico,
+  removerServico,
+  adicionarPeca,
+  removerPeca,
+  mudarStatus
 };

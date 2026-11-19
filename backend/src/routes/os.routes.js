@@ -11,5 +11,20 @@ router.get('/:id', asyncHandler(ctrl.buscar));
 
 /* Abrir a OS: administrador e atendente */
 router.post('/', autorizar('ADMIN', 'ATENDENTE'), asyncHandler(ctrl.criar));
+router.put('/:id', autorizar('ADMIN', 'ATENDENTE'), asyncHandler(ctrl.atualizar));
+
+/* Só o administrador exclui */
+router.delete('/:id', autorizar('ADMIN'), asyncHandler(ctrl.excluir));
+
+/* Itens da OS: todos os perfis (o mecânico executa a OS) */
+const todos = autorizar('ADMIN', 'ATENDENTE', 'MECANICO');
+
+router.post('/:id/servicos', todos, asyncHandler(ctrl.adicionarServico));
+router.delete('/:id/servicos/:itemId', todos, asyncHandler(ctrl.removerServico));
+router.post('/:id/pecas', todos, asyncHandler(ctrl.adicionarPeca));
+router.delete('/:id/pecas/:itemId', todos, asyncHandler(ctrl.removerPeca));
+
+/* Andamento da OS: todos os perfis - o cancelamento é validado no controller */
+router.patch('/:id/status', todos, asyncHandler(ctrl.mudarStatus));
 
 module.exports = router;

@@ -397,6 +397,72 @@ function validarOS(
   };
 };
 
+function validarItemServico(body = {}) {
+  const v = criarValidador();
+
+  const servicoId = v.inteiro(
+    body.servico_id,
+    'servico_id',
+    {
+      obrigatorio: true,
+      min: 1
+    }
+  );
+
+  const quantidade = v.inteiro(
+    body.quantidade,
+    'quantidade',
+    {
+      min: 1,
+      max: 999
+    }
+  );
+
+  const valor = v.decimal(
+    body.valor_unitario,
+    'valor_unitario',
+    {}
+  );
+
+  v.concluir();
+
+  return {
+    servico_id: servicoId,
+    quantidade: quantidade ?? 1,
+    valor_unitario: valor
+  };
+};
+
+function validarItemPeca(body = {}) {
+  const v = criarValidador();
+
+  const pecaId = v.inteiro(
+    body.peca_id,
+    'peca_id',
+    {
+      obrigatorio: true,
+      min: 1
+    }
+  );
+
+  const quantidade = v.inteiro(
+    body.quantidade,
+    'quantidade',
+    {
+      obrigatorio: true,
+      min: 1,
+      max: 9999
+    }
+  );
+
+  v.concluir();
+
+  return {
+    peca_id: pecaId,
+    quantidade
+  };
+};
+
 const STATUS_OS = [
   'aberta',
   'em_andamento',
@@ -416,12 +482,27 @@ function idDaRota(req) {
   return id;
 };
 
+/* Converte um parâmetro de rota qualquer em número inteiro positivo */
+function idParam(req, nome) {
+  const id = Number(req.params[nome]);
+
+  if (!Number.isInteger(id) || id <= 0) throw new ErroHttp(
+    400,
+    'ID inválido!'
+  );
+
+  return id;
+};
+
 module.exports = {
   validarCliente,
   validarVeiculo,
   validarServico,
   validarPeca,
   validarOS,
+  validarItemServico,
+  validarItemPeca,
   STATUS_OS,
-  idDaRota
+  idDaRota,
+  idParam
 };
