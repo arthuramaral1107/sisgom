@@ -32,7 +32,7 @@ async function requisicao(caminho, { metodo = 'GET', corpo, semAuth = false } = 
     resp = await fetch(`${API_URL}${caminho}`, {
       method: metodo,
       headers,
-      body: corpo ? JSON.stringify(corpo) : undefined,
+      body: corpo ? JSON.stringify(corpo) : undefined
     });
   } catch {
     throw new ErroApi(
