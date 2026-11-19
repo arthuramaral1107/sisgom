@@ -2,6 +2,7 @@ const pool = require('../config/db');
 const { ErroHttp } = require('../middlewares/erros');
 const { validarCliente, idDaRota } = require('../utils/validacao');
 
+/* Colunas retornadas nas consultas de clientes */
 const COLUNAS = `
   id,
   nome,
