@@ -319,11 +319,7 @@ export default function OSDetalhe() {
                     </form>
                 ) : (
                     <p>
-                        <strong>
-                            Defeito relatado:
-                        </strong>
-
-                        {os.defeito_relatado}
+                        <strong>Defeito relatado:</strong> {os.defeito_relatado}
                     </p>
                 )}
             </section>
