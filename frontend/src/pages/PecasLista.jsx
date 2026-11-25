@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext.jsx';
 import ModalAlerta from '../components/ModalAlerta.jsx';
 import { formatarMoeda, useDebounce } from '../hooks.js';
 import { useCallback, useEffect, useState } from 'react';
+import { useConfirmar } from '../contexts/ConfirmacaoContext.jsx';
 
 /* Quantidade de registros por página */
 const LIMITE = 10;
@@ -12,6 +13,7 @@ const LIMITE = 10;
 /* Lista de peças em estoque - com busca, filtro de estoque baixo e paginação */
 export default function PecasLista() {
   const { pode } = useAuth();
+  const confirmar = useConfirmar();
   const [busca, setBusca] = useState('');
   const termo = useDebounce(busca);
   const [apenasBaixo, setApenasBaixo] = useState(false);

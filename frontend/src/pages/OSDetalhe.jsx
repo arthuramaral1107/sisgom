@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext.jsx';
 import ModalAlerta from '../components/ModalAlerta.jsx';
 import { useNavigate, useParams } from 'react-router-dom';
 import { formatarDataHora, formatarMoeda } from '../hooks.js';
+import { useConfirmar } from '../contexts/ConfirmacaoContext.jsx';
 
 /* Valores iniciais do formulário de serviço da OS */
 const NOVO_SERVICO = {
@@ -56,6 +57,7 @@ export default function OSDetalhe() {
     };
 
     const { pode } = useAuth();
+    const confirmar = useConfirmar();
     const [os, setOs] = useState(null);
     const [servicos, setServicos] = useState([]);
     const [pecas, setPecas] = useState([]);
