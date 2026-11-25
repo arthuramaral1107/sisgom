@@ -520,6 +520,74 @@ const STATUS_OS = [
   'cancelada'
 ];
 
+/* Perfis aceitos no cadastro de usuários */
+const PERFIS = [
+  'ADMIN',
+  'ATENDENTE',
+  'MECANICO'
+];
+
+/* Valida e normaliza os dados de usuário - na edição a senha é opcional */
+function validarUsuario(body = {}, { senhaObrigatoria = false } = {}) {
+  const v = criarValidador();
+
+  const nome = v.texto(
+    body.nome,
+    'nome',
+    {
+      obrigatorio: true,
+      max: 100
+    }
+  );
+
+  const email = v.texto(
+    body.email,
+    'email',
+    {
+      obrigatorio: true,
+      max: 120
+    }
+  );
+
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    v.erros.push({
+      campo: 'email',
+      mensagem: 'E-mail inválido!'
+    });
+  }
+
+  if (!PERFIS.includes(body.perfil)) {
+    v.erros.push({
+      campo: 'perfil',
+      mensagem: 'Perfil inválido!'
+    });
+  }
+
+  // a senha não passa por trim - espaços fazem parte dela
+  const senha = typeof body.senha === 'string' ? body.senha : '';
+
+  if (!senha) {
+    if (senhaObrigatoria) v.erros.push({
+      campo: 'senha',
+      mensagem: 'Campo obrigatório!'
+    });
+  } else if (senha.length < 8 || senha.length > 72) {
+    v.erros.push({
+      campo: 'senha',
+      mensagem: 'A senha deve ter de 8 a 72 caracteres!'
+    });
+  }
+
+  v.concluir();
+
+  return {
+    nome,
+    email: email.toLowerCase(),
+    perfil: body.perfil,
+    senha: senha || null
+  };
+};
+
 /* Converte :id da rota em número inteiro positivo */
 function idDaRota(req) {
   const id = Number(req.params.id);
@@ -553,6 +621,7 @@ module.exports = {
   validarItemServico,
   validarItemPeca,
   validarPagamento,
+  validarUsuario,
   FORMAS_PAGAMENTO,
   STATUS_OS,
   idDaRota,
