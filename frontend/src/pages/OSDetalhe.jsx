@@ -3,6 +3,7 @@ import Campo from '../components/Campo.jsx';
 import { useEffect, useState } from 'react';
 import StatusOS from '../components/StatusOS.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
+import ModalAlerta from '../components/ModalAlerta.jsx';
 import { useNavigate, useParams } from 'react-router-dom';
 import { formatarDataHora, formatarMoeda } from '../hooks.js';
 
@@ -17,6 +18,27 @@ const NOVO_SERVICO = {
 const NOVA_PECA = {
     peca_id: '',
     quantidade: '1'
+};
+
+/* Valores iniciais do formulário de pagamento da OS */
+const NOVO_PAGAMENTO = {
+    forma_pagamento: '',
+    valor: ''
+};
+
+/* Texto exibido para cada forma de pagamento */
+const FORMAS_PAGAMENTO = {
+    dinheiro: 'Dinheiro',
+    pix: 'Pix',
+    cartao_debito: 'Cartão de débito',
+    cartao_credito: 'Cartão de crédito'
+};
+
+/* Texto exibido para a situação do pagamento da OS */
+const SITUACOES_PAGAMENTO = {
+    pendente: 'Pendente',
+    parcial: 'Parcial',
+    pago: 'Pago'
 };
 
 /* Converte texto de campo em número - vazio vira null */
@@ -46,6 +68,7 @@ export default function OSDetalhe() {
 
     const [novoServico, setNovoServico] = useState(NOVO_SERVICO);
     const [novaPeca, setNovaPeca] = useState(NOVA_PECA);
+    const [novoPagamento, setNovoPagamento] = useState(NOVO_PAGAMENTO);
     const [erro, setErro] = useState('');
     const [detalhes, setDetalhes] = useState([]);
     const [ocupado, setOcupado] = useState(false);
@@ -137,6 +160,25 @@ export default function OSDetalhe() {
 
     const removerPeca = (item) => executar(() => api.os.removerPeca(id, item.id));
 
+    const registrarPagamento = async (event) => {
+        event.preventDefault();
+
+        const ok = await executar(() => api.os.adicionarPagamento(id, {
+            forma_pagamento: novoPagamento.forma_pagamento,
+            valor: novoPagamento.valor
+        }));
+
+        if (ok) setNovoPagamento(NOVO_PAGAMENTO);
+    };
+
+    const estornarPagamento = (pagamento) => {
+        const pergunta = `Estornar o pagamento de ${formatarMoeda(pagamento.valor)} (${FORMAS_PAGAMENTO[pagamento.forma_pagamento]})?`;
+
+        if (!window.confirm(pergunta)) return;
+
+        executar(() => api.os.removerPagamento(id, pagamento.id));
+    };
+
     const mudarStatus = (status, pergunta) => {
         if (pergunta && !window.confirm(pergunta)) return;
 
@@ -153,6 +195,12 @@ export default function OSDetalhe() {
         });
 
         if (ok) navegar('/os');
+    };
+
+    /* Fecha o aviso de erro */
+    const fecharErro = () => {
+        setErro('');
+        setDetalhes([]);
     };
 
     if (!os) {
@@ -183,6 +231,15 @@ export default function OSDetalhe() {
         'cancelada'
     ].includes(os.status);
 
+    const finalizada = os.status === 'finalizada';
+
+    const podeReceber = finalizada && os.saldo > 0 && pode(
+        'ADMIN',
+        'ATENDENTE'
+    );
+
+    const podeEstornar = finalizada && pode('ADMIN');
+
     return (
         <>
             <div className="titulo-linha">
@@ -199,17 +256,11 @@ export default function OSDetalhe() {
             </div>
 
             {erro && (
-                <div className="alerta erro">
-                    {erro}
-
-                    {detalhes.length > 0 && (
-                        <ul>
-                            {detalhes.map((detalhe, indice) => <li key={indice}>
-                                {detalhe.mensagem}
-                            </li>)}
-                        </ul>
-                    )}
-                </div>
+                <ModalAlerta
+                    mensagem={erro}
+                    detalhes={detalhes}
+                    aoFechar={fecharErro}
+                />
             )}
 
             <section className="cartao">
@@ -607,6 +658,160 @@ export default function OSDetalhe() {
                     Total: {formatarMoeda(os.valor_total)}
                 </div>
             </section>
+
+            {finalizada && (
+                <section className="cartao">
+                    <h3>
+                        Pagamentos <span className={`etiqueta pagamento-${os.situacao_pagamento}`}>
+                            {SITUACOES_PAGAMENTO[os.situacao_pagamento]}
+                        </span>
+                    </h3>
+
+                    <dl className="resumo">
+                        <div>
+                            <dt>
+                                Total da OS
+                            </dt>
+
+                            <dd>
+                                {formatarMoeda(os.valor_total)}
+                            </dd>
+                        </div>
+
+                        <div>
+                            <dt>
+                                Total pago
+                            </dt>
+
+                            <dd>
+                                {formatarMoeda(os.total_pago)}
+                            </dd>
+                        </div>
+
+                        <div>
+                            <dt>
+                                Saldo a pagar
+                            </dt>
+
+                            <dd>
+                                {formatarMoeda(os.saldo)}
+                            </dd>
+                        </div>
+                    </dl>
+
+                    <table className="tabela">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Data
+                                </th>
+
+                                <th>
+                                    Forma
+                                </th>
+
+                                <th>
+                                    Valor
+                                </th>
+
+                                {podeEstornar && <th />}
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {os.pagamentos.map((pagamento) => (
+                                <tr key={pagamento.id}>
+                                    <td>
+                                        {formatarDataHora(pagamento.data_pagamento)}
+                                    </td>
+
+                                    <td>
+                                        {FORMAS_PAGAMENTO[pagamento.forma_pagamento]}
+                                    </td>
+
+                                    <td>
+                                        {formatarMoeda(pagamento.valor)}
+                                    </td>
+
+                                    {podeEstornar && (
+                                        <td className="acoes">
+                                            <button
+                                                className="link perigo"
+                                                disabled={ocupado}
+                                                onClick={() => estornarPagamento(pagamento)}
+                                            >
+                                                Estornar
+                                            </button>
+                                        </td>
+                                    )}
+                                </tr>
+                            ))}
+
+                            {os.pagamentos.length === 0 && (
+                                <tr>
+                                    <td
+                                        colSpan={podeEstornar ? 4 : 3}
+                                        className="vazio"
+                                    >
+                                        Nenhum pagamento registrado.
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+
+                    {podeReceber && (
+                        <form
+                            className="item-add"
+                            onSubmit={registrarPagamento}
+                            noValidate
+                        >
+                            <Campo rotulo="Forma de pagamento">
+                                <select
+                                    value={novoPagamento.forma_pagamento}
+                                    onChange={(event) => setNovoPagamento({
+                                        ...novoPagamento,
+                                        forma_pagamento: event.target.value
+                                    })}
+                                >
+                                    <option value="">
+                                        Selecione
+                                    </option>
+
+                                    {Object.entries(FORMAS_PAGAMENTO).map(([valor, rotulo]) => (
+                                        <option
+                                            key={valor}
+                                            value={valor}
+                                        >
+                                            {rotulo}
+                                        </option>
+                                    ))}
+                                </select>
+                            </Campo>
+
+                            <Campo
+                                rotulo="Valor"
+                                nome="valor"
+                                valor={novoPagamento.valor}
+                                aoMudar={(campo, valor) => setNovoPagamento({
+                                    ...novoPagamento,
+                                    valor
+                                })}
+                                placeholder={String(os.saldo).replace('.', ',')}
+                            />
+
+                            <div />
+
+                            <button
+                                className="btn primario"
+                                disabled={ocupado}
+                            >
+                                Registrar
+                            </button>
+                        </form>
+                    )}
+                </section>
+            )}
 
             <section className="cartao">
                 <h3>

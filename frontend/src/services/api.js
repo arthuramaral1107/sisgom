@@ -170,6 +170,17 @@ export const api = {
         corpo: { status }
       }
     ),
+    adicionarPagamento: (id, dados) => requisicao(
+      `/os/${id}/pagamentos`,
+      {
+        metodo: 'POST',
+        corpo: dados
+      }
+    ),
+    removerPagamento: (id, pagamentoId) => requisicao(
+      `/os/${id}/pagamentos/${pagamentoId}`,
+      { metodo: 'DELETE' }
+    ),
   },
   usuarios: {
     mecanicos: () => requisicao('/usuarios/mecanicos'),

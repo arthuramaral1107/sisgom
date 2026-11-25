@@ -3,6 +3,7 @@ import { api } from '../services/api.js';
 import { useDebounce } from '../hooks.js';
 import Paginacao from '../components/Paginacao.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
+import ModalAlerta from '../components/ModalAlerta.jsx';
 import { useCallback, useEffect, useState } from 'react';
 
 /* Quantidade de registros por página */
@@ -86,9 +87,10 @@ export default function VeiculosLista() {
         onChange={(e) => setBusca(e.target.value)}
       />
 
-      {erro && <div className="alerta erro">
-        {erro}
-      </div>}
+      {erro && <ModalAlerta
+        mensagem={erro}
+        aoFechar={() => setErro('')}
+      />}
 
       <table className="tabela">
         <thead>

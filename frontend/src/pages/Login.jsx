@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Campo from '../components/Campo.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
+import ModalAlerta from '../components/ModalAlerta.jsx';
 import { Navigate, useNavigate } from 'react-router-dom';
 
 /* Tela de login */
@@ -81,9 +82,10 @@ export default function Login() {
           required
         />
 
-        {erro && <div className="alerta erro">
-          {erro}
-        </div>}
+        {erro && <ModalAlerta
+          mensagem={erro}
+          aoFechar={() => setErro('')}
+        />}
 
         <button
           className="btn primario"

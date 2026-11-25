@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { api } from '../services/api.js';
 import Paginacao from '../components/Paginacao.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
+import ModalAlerta from '../components/ModalAlerta.jsx';
 import { formatarMoeda, useDebounce } from '../hooks.js';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -86,9 +87,10 @@ export default function ServicosLista() {
         onChange={(event) => setBusca(event.target.value)}
       />
 
-      {erro && <div className="alerta erro">
-        {erro}
-      </div>}
+      {erro && <ModalAlerta
+        mensagem={erro}
+        aoFechar={() => setErro('')}
+      />}
 
       <table className="tabela">
         <thead>

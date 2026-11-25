@@ -3,6 +3,7 @@ import Campo from '../components/Campo.jsx';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { detalhesParaObjeto } from '../hooks.js';
+import ModalAlerta from '../components/ModalAlerta.jsx';
 
 /* Valores iniciais do formulário */
 const VAZIO = {
@@ -158,9 +159,10 @@ export default function OSForm() {
                     </div>
                 </div>
 
-                {erroGeral && <div className="alerta erro">
-                    {erroGeral}
-                </div>}
+                {erroGeral && <ModalAlerta
+                    mensagem={erroGeral}
+                    aoFechar={() => setErroGeral('')}
+                />}
 
                 <div className="botoes">
                     <button

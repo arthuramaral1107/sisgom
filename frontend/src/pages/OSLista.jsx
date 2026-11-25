@@ -2,6 +2,7 @@ import { api } from '../services/api.js';
 import StatusOS from '../components/StatusOS.jsx';
 import Paginacao from '../components/Paginacao.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
+import ModalAlerta from '../components/ModalAlerta.jsx';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useCallback, useEffect, useState } from 'react';
 import { formatarDataHora, formatarMoeda, useDebounce } from '../hooks.js';
@@ -136,9 +137,10 @@ export default function OSLista() {
                 </select>
             </div>
 
-            {erro && <div className="alerta erro">
-                {erro}
-            </div>}
+            {erro && <ModalAlerta
+                mensagem={erro}
+                aoFechar={() => setErro('')}
+            />}
 
             <table className="tabela">
                 <thead>

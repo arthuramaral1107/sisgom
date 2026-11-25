@@ -2,6 +2,7 @@ import { api } from '../services/api.js';
 import Campo from '../components/Campo.jsx';
 import { useEffect, useState } from 'react';
 import { detalhesParaObjeto } from '../hooks.js';
+import ModalAlerta from '../components/ModalAlerta.jsx';
 import { useNavigate, useParams } from 'react-router-dom';
 
 /* Valores iniciais do formulário */
@@ -119,9 +120,10 @@ export default function ClienteForm() {
           </div>
         </div>
 
-        {erroGeral && <div className="alerta erro">
-          {erroGeral}
-        </div>}
+        {erroGeral && <ModalAlerta
+          mensagem={erroGeral}
+          aoFechar={() => setErroGeral('')}
+        />}
 
         <div className="botoes">
           <button
