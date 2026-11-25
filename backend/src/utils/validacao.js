@@ -475,6 +475,43 @@ function validarItemPeca(body = {}) {
   };
 };
 
+/* Formas de pagamento aceitas - iguais ao CHECK da tabela pagamento */
+const FORMAS_PAGAMENTO = [
+  'dinheiro',
+  'pix',
+  'cartao_debito',
+  'cartao_credito'
+];
+
+/* Valida o pagamento registrado em uma OS */
+function validarPagamento(body = {}) {
+  const v = criarValidador();
+
+  const forma = typeof body.forma_pagamento === 'string' ? body.forma_pagamento.trim() : '';
+  if (!FORMAS_PAGAMENTO.includes(forma)) {
+    v.erros.push({
+      campo: 'forma_pagamento',
+      mensagem: 'Forma de pagamento inválida'
+    });
+  }
+
+  const valor = v.decimal(
+    body.valor,
+    'valor',
+    {
+      obrigatorio: true,
+      min: 0.01
+    }
+  );
+
+  v.concluir();
+
+  return {
+    forma_pagamento: forma,
+    valor
+  };
+};
+
 /* Status possíveis da ordem de serviço */
 const STATUS_OS = [
   'aberta',
@@ -515,6 +552,8 @@ module.exports = {
   validarOS,
   validarItemServico,
   validarItemPeca,
+  validarPagamento,
+  FORMAS_PAGAMENTO,
   STATUS_OS,
   idDaRota,
   idParam

@@ -2,6 +2,7 @@ const {
   validarOS,
   validarItemServico,
   validarItemPeca,
+  validarPagamento,
   STATUS_OS,
   idDaRota,
   idParam
@@ -69,10 +70,41 @@ async function carregarOS(db, id) {
     ORDER BY i.id
   `, [id]);
 
+  const pagamentos = await db.query(`
+    SELECT
+      id,
+      forma_pagamento,
+      valor::float8 AS valor,
+      data_pagamento
+    FROM pagamento
+    WHERE os_id = $1
+    ORDER BY data_pagamento, id
+  `, [id]);
+
+  // soma em centavos para não acumular erro de ponto flutuante
+  const totalPago = pagamentos.rows.reduce(
+    (soma, p) => soma + Math.round(p.valor * 100),
+    0
+  ) / 100;
+
+  const saldo = Math.round((rows[0].valor_total - totalPago) * 100) / 100;
+
+  let situacao = null;
+
+  if (rows[0].status === 'finalizada') {
+    if (saldo <= 0) situacao = 'pago';
+    else if (totalPago > 0) situacao = 'parcial';
+    else situacao = 'pendente';
+  }
+
   return {
     ...rows[0],
     servicos: servicos.rows,
-    pecas: pecas.rows
+    pecas: pecas.rows,
+    pagamentos: pagamentos.rows,
+    total_pago: totalPago,
+    saldo,
+    situacao_pagamento: situacao
   };
 };
 
@@ -602,6 +634,81 @@ async function mudarStatus(req, res) {
   res.json(await carregarOS(pool, id));
 };
 
+/* POST /api/os/:id/pagamentos - só em OS finalizada e até o saldo */
+async function adicionarPagamento(req, res) {
+  const id = idDaRota(req);
+  const d = validarPagamento(req.body);
+
+  await comTransacao(async (client) => {
+    const os = await travarOS(client, id);
+
+    if (os.status !== 'finalizada') {
+      throw new ErroHttp(
+        409,
+        'Só é possível registrar pagamento em ordem finalizada'
+      );
+    }
+
+    const { rows } = await client.query(`
+      SELECT (os.valor_total - COALESCE(SUM(p.valor), 0))::float8 AS saldo
+      FROM ordem_servico os
+      LEFT JOIN pagamento p ON p.os_id = os.id
+      WHERE os.id = $1
+      GROUP BY os.id
+    `, [id]);
+
+    const saldo = rows[0].saldo;
+
+    if (saldo <= 0) {
+      throw new ErroHttp(409, 'Esta ordem de serviço já está totalmente paga');
+    }
+
+    if (Math.round(d.valor * 100) > Math.round(saldo * 100)) {
+      throw new ErroHttp(
+        409,
+        'Valor acima do saldo da ordem de serviço',
+        [{
+          campo: 'valor',
+          mensagem: `Saldo a pagar: R$ ${saldo.toFixed(2).replace('.', ',')}`
+        }]
+      );
+    }
+
+    await client.query(`
+      INSERT INTO pagamento (
+        os_id,
+        forma_pagamento,
+        valor
+      ) VALUES ($1, $2, $3)
+    `, [
+      id,
+      d.forma_pagamento,
+      d.valor
+    ]);
+  });
+
+  res.status(201).json(await carregarOS(pool, id));
+};
+
+/* DELETE /api/os/:id/pagamentos/:pagamentoId - estorno, só administrador */
+async function removerPagamento(req, res) {
+  const id = idDaRota(req);
+  const pagamentoId = idParam(req, 'pagamentoId');
+
+  await comTransacao(async (client) => {
+    await travarOS(client, id);
+
+    const { rowCount } = await client.query(`
+      DELETE FROM pagamento
+      WHERE id = $1 AND os_id = $2
+    `, [pagamentoId, id]);
+
+    if (!rowCount) throw new ErroHttp(404, 'Pagamento não encontrado nesta OS');
+  });
+
+  res.json(await carregarOS(pool, id));
+};
+
 module.exports = {
   listar,
   buscar,
@@ -612,5 +719,7 @@ module.exports = {
   removerServico,
   adicionarPeca,
   removerPeca,
-  mudarStatus
+  mudarStatus,
+  adicionarPagamento,
+  removerPagamento
 };

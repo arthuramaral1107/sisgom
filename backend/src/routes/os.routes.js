@@ -27,4 +27,8 @@ router.delete('/:id/pecas/:itemId', todos, asyncHandler(ctrl.removerPeca));
 /* Andamento da OS: todos os perfis - o cancelamento é validado no controller */
 router.patch('/:id/status', todos, asyncHandler(ctrl.mudarStatus));
 
+/* Pagamentos: administrador e atendente registram, só o administrador estorna */
+router.post('/:id/pagamentos', autorizar('ADMIN', 'ATENDENTE'), asyncHandler(ctrl.adicionarPagamento));
+router.delete('/:id/pagamentos/:pagamentoId', autorizar('ADMIN'), asyncHandler(ctrl.removerPagamento));
+
 module.exports = router;
