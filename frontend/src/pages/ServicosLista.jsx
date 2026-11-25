@@ -49,7 +49,12 @@ export default function ServicosLista() {
   useEffect(() => { setPagina(1); }, [termo]);
 
   const excluir = async (servico) => {
-    if (!window.confirm(`Excluir o serviço "${servico.descricao}"?`)) return;
+    const confirmado = await confirmar(
+      `Excluir o serviço "${servico.descricao}"?`,
+      { perigo: true }
+    );
+
+    if (!confirmado) return;
 
     try {
       await api.servicos.excluir(servico.id);

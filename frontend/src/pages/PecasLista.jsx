@@ -56,7 +56,12 @@ export default function PecasLista() {
   ]);
 
   const excluir = async (peca) => {
-    if (!window.confirm(`Excluir a peça "${peca.descricao}"?`)) return;
+    const confirmado = await confirmar(
+      `Excluir a peça "${peca.descricao}"?`,
+      { perigo: true }
+    );
+
+    if (!confirmado) return;
 
     try {
       await api.pecas.excluir(peca.id);

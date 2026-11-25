@@ -48,7 +48,12 @@ export default function ClientesLista() {
   useEffect(() => { setPagina(1); }, [termo]);
 
   const excluir = async (c) => {
-    if (!window.confirm(`Excluir o cliente "${c.nome}"?`)) return;
+    const confirmado = await confirmar(
+      `Excluir o cliente "${c.nome}"?`,
+      { perigo: true }
+    );
+
+    if (!confirmado) return;
 
     try {
       await api.clientes.excluir(c.id);

@@ -13,6 +13,13 @@ export function useDebounce(valor, ms = 350) {
   return atual;
 };
 
+/* Texto exibido para cada perfil de usuário */
+export const ROTULOS_PERFIL = {
+  ADMIN: 'Administrador',
+  ATENDENTE: 'Atendente',
+  MECANICO: 'Mecânico'
+};
+
 /* Converte o array "detalhes" da API em { campo: mensagem } */
 export function detalhesParaObjeto(detalhes = []) {
   return Object.fromEntries(detalhes.map((d) => [d.campo, d.mensagem]));

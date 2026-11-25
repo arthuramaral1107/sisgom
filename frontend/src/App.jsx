@@ -8,9 +8,11 @@ import {
   ClienteForm,
   VeiculoForm,
   ServicoForm,
+  UsuarioForm,
   ClientesLista,
   VeiculosLista,
-  ServicosLista
+  ServicosLista,
+  UsuariosLista
 } from './pages/index.js';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { Layout, RotaProtegida } from './components/index.js';
@@ -100,6 +102,23 @@ export default function App() {
             path="/os/:id"
             element={<OSDetalhe />}
           />
+
+          <Route element={<RotaProtegida perfis={['ADMIN']} />}>
+            <Route
+              path="/usuarios"
+              element={<UsuariosLista />}
+            />
+
+            <Route
+              path="/usuarios/novo"
+              element={<UsuarioForm />}
+            />
+
+            <Route
+              path="/usuarios/:id"
+              element={<UsuarioForm />}
+            />
+          </Route>
         </Route>
       </Route>
 

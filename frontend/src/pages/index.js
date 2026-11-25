@@ -7,6 +7,8 @@ export { default as PecasLista } from './PecasLista.jsx';
 export { default as ClienteForm } from './ClienteForm.jsx';
 export { default as VeiculoForm } from './VeiculoForm.jsx';
 export { default as ServicoForm } from './ServicoForm.jsx';
+export { default as UsuarioForm } from './UsuarioForm.jsx';
 export { default as ClientesLista } from './ClientesLista.jsx';
 export { default as VeiculosLista } from './VeiculosLista.jsx';
 export { default as ServicosLista } from './ServicosLista.jsx';
+export { default as UsuariosLista } from './UsuariosLista.jsx';

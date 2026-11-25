@@ -49,7 +49,12 @@ export default function VeiculosLista() {
   useEffect(() => { setPagina(1); }, [termo]);
 
   const excluir = async (v) => {
-    if (!window.confirm(`Excluir o veículo ${v.placa}?`)) return;
+    const confirmado = await confirmar(
+      `Excluir o veículo ${v.placa}?`,
+      { perigo: true }
+    );
+
+    if (!confirmado) return;
 
     try {
       await api.veiculos.excluir(v.id);

@@ -171,22 +171,30 @@ export default function OSDetalhe() {
         if (ok) setNovoPagamento(NOVO_PAGAMENTO);
     };
 
-    const estornarPagamento = (pagamento) => {
-        const pergunta = `Estornar o pagamento de ${formatarMoeda(pagamento.valor)} (${FORMAS_PAGAMENTO[pagamento.forma_pagamento]})?`;
+    const estornarPagamento = async (pagamento) => {
+        const confirmado = await confirmar(
+            `Estornar o pagamento de ${formatarMoeda(pagamento.valor)} (${FORMAS_PAGAMENTO[pagamento.forma_pagamento]})?`,
+            { perigo: true }
+        );
 
-        if (!window.confirm(pergunta)) return;
+        if (!confirmado) return;
 
         executar(() => api.os.removerPagamento(id, pagamento.id));
     };
 
-    const mudarStatus = (status, pergunta) => {
-        if (pergunta && !window.confirm(pergunta)) return;
+    const mudarStatus = async (status, pergunta, opcoes) => {
+        if (pergunta && !(await confirmar(pergunta, opcoes))) return;
 
         executar(() => api.os.mudarStatus(id, status));
     };
 
     const excluir = async () => {
-        if (!window.confirm(`Excluir a OS #${os.id}?`)) return;
+        const confirmado = await confirmar(
+            `Excluir a OS #${os.id}?`,
+            { perigo: true }
+        );
+
+        if (!confirmado) return;
 
         const ok = await executar(async () => {
             await api.os.excluir(id);
@@ -848,7 +856,8 @@ export default function OSDetalhe() {
                             disabled={ocupado}
                             onClick={() => mudarStatus(
                                 'cancelada',
-                                'Cancelar esta OS?'
+                                'Cancelar esta OS?',
+                                { perigo: true }
                             )}
                         >
                             Cancelar OS

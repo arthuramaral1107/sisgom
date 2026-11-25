@@ -92,7 +92,13 @@ export const api = {
   clientes: {
     listar: (params) => requisicao(`/clientes${qs(params)}`),
     buscar: (id) => requisicao(`/clientes/${id}`),
-    criar: (dados) => requisicao('/clientes', { metodo: 'POST', corpo: dados }),
+    criar: (dados) => requisicao(
+      '/clientes',
+      {
+        metodo: 'POST',
+        corpo: dados
+      }
+    ),
     atualizar: (id, dados) => requisicao(
       `/clientes/${id}`,
       {
@@ -100,12 +106,21 @@ export const api = {
         corpo: dados
       }
     ),
-    excluir: (id) => requisicao(`/clientes/${id}`, { metodo: 'DELETE' }),
+    excluir: (id) => requisicao(
+      `/clientes/${id}`,
+      { metodo: 'DELETE' }
+    ),
   },
   veiculos: {
     listar: (params) => requisicao(`/veiculos${qs(params)}`),
     buscar: (id) => requisicao(`/veiculos/${id}`),
-    criar: (dados) => requisicao('/veiculos', { metodo: 'POST', corpo: dados }),
+    criar: (dados) => requisicao(
+      '/veiculos',
+      {
+        metodo: 'POST',
+        corpo: dados
+      }
+    ),
     atualizar: (id, dados) => requisicao(
       `/veiculos/${id}`,
       {
@@ -113,12 +128,21 @@ export const api = {
         corpo: dados
       }
     ),
-    excluir: (id) => requisicao(`/veiculos/${id}`, { metodo: 'DELETE' }),
+    excluir: (id) => requisicao(
+      `/veiculos/${id}`,
+      { metodo: 'DELETE' }
+    ),
   },
   servicos: {
     listar: (params) => requisicao(`/servicos${qs(params)}`),
     buscar: (id) => requisicao(`/servicos/${id}`),
-    criar: (dados) => requisicao('/servicos', { metodo: 'POST', corpo: dados }),
+    criar: (dados) => requisicao(
+      '/servicos',
+      {
+        metodo: 'POST',
+        corpo: dados
+      }
+    ),
     atualizar: (id, dados) => requisicao(
       `/servicos/${id}`,
       {
@@ -126,21 +150,54 @@ export const api = {
         corpo: dados
       }
     ),
-    excluir: (id) => requisicao(`/servicos/${id}`, { metodo: 'DELETE' }),
+    excluir: (id) => requisicao(
+      `/servicos/${id}`,
+      { metodo: 'DELETE' }
+    ),
   },
   pecas: {
     listar: (params) => requisicao(`/pecas${qs(params)}`),
     buscar: (id) => requisicao(`/pecas/${id}`),
-    criar: (dados) => requisicao('/pecas', { metodo: 'POST', corpo: dados }),
-    atualizar: (id, dados) => requisicao(`/pecas/${id}`, { metodo: 'PUT', corpo: dados }),
-    excluir: (id) => requisicao(`/pecas/${id}`, { metodo: 'DELETE' }),
+    criar: (dados) => requisicao(
+      '/pecas',
+      {
+        metodo: 'POST',
+        corpo: dados
+      }
+    ),
+    atualizar: (id, dados) => requisicao(
+      `/pecas/${id}`,
+      {
+        metodo: 'PUT',
+        corpo: dados
+      }
+    ),
+    excluir: (id) => requisicao(
+      `/pecas/${id}`,
+      { metodo: 'DELETE' }
+    ),
   },
   os: {
     listar: (params) => requisicao(`/os${qs(params)}`),
     buscar: (id) => requisicao(`/os/${id}`),
-    criar: (dados) => requisicao('/os', { metodo: 'POST', corpo: dados }),
-    atualizar: (id, dados) => requisicao(`/os/${id}`, { metodo: 'PUT', corpo: dados }),
-    excluir: (id) => requisicao(`/os/${id}`, { metodo: 'DELETE' }),
+    criar: (dados) => requisicao(
+      '/os',
+      {
+        metodo: 'POST',
+        corpo: dados
+      }
+    ),
+    atualizar: (id, dados) => requisicao(
+      `/os/${id}`,
+      {
+        metodo: 'PUT',
+        corpo: dados
+      }
+    ),
+    excluir: (id) => requisicao(
+      `/os/${id}`,
+      { metodo: 'DELETE' }
+    ),
     adicionarServico: (id, dados) => requisicao(
       `/os/${id}/servicos`,
       {
@@ -183,6 +240,29 @@ export const api = {
     ),
   },
   usuarios: {
+    listar: (params) => requisicao(`/usuarios${qs(params)}`),
+    buscar: (id) => requisicao(`/usuarios/${id}`),
+    criar: (dados) => requisicao(
+      '/usuarios',
+      {
+        metodo: 'POST',
+        corpo: dados
+      }
+    ),
+    atualizar: (id, dados) => requisicao(
+      `/usuarios/${id}`,
+      {
+        metodo: 'PUT',
+        corpo: dados
+      }
+    ),
+    alterarAtivo: (id, ativo) => requisicao(
+      `/usuarios/${id}/ativo`,
+      {
+        metodo: 'PATCH',
+        corpo: { ativo }
+      }
+    ),
     mecanicos: () => requisicao('/usuarios/mecanicos'),
   }
 };

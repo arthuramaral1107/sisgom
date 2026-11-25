@@ -306,8 +306,38 @@ h2 {
 }
 
 .modal .botoes {
+  gap: 10px;
   margin-top: 20px;
   justify-content: flex-end;
+}
+
+.modal.confirmacao {
+  border-top-color: var(--primaria);
+}
+
+.modal.confirmacao.perigo {
+  border-top-color: var(--perigo);
+}
+
+.modal.confirmacao h3 {
+  color: var(--texto);
+}
+
+.sem-permissao {
+  max-width: 480px;
+  margin: 48px auto;
+  text-align: center;
+}
+
+.sem-permissao h2 {
+  margin-top: 0;
+  color: var(--perigo);
+}
+
+.sem-permissao code {
+  padding: 2px 8px;
+  background: var(--fundo);
+  border-radius: 4px;
 }
 
 .alerta.info {
@@ -499,6 +529,16 @@ h2 {
 }
 
 .etiqueta.status-cancelada {
+  background: #e5e7eb;
+  color: #4b5563;
+}
+
+.etiqueta.situacao-ativo {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.etiqueta.situacao-inativo {
   background: #e5e7eb;
   color: #4b5563;
 }

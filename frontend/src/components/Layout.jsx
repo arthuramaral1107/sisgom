@@ -3,7 +3,7 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 
 /* Estrutura das telas - menu lateral, cabeçalho com o usuário e área de conteúdo */
 export default function Layout() {
-  const { usuario, sair } = useAuth();
+  const { usuario, sair, pode } = useAuth();
   const navegar = useNavigate();
 
   const aoSair = () => {
@@ -44,6 +44,10 @@ export default function Layout() {
           <NavLink to="/pecas">
             Peças
           </NavLink>
+
+          {pode('ADMIN') && <NavLink to="/usuarios">
+            Usuários
+          </NavLink>}
         </nav>
 
         <button
