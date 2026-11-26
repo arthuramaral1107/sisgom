@@ -148,6 +148,8 @@ h2 {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
   margin-bottom: 4px;
 }
 
@@ -246,6 +248,8 @@ h2 {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
   margin-top: 14px;
   color: var(--cinza);
   font-size: 13px;
@@ -369,7 +373,7 @@ h2 {
 
 .grade {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
   gap: 18px;
 }
 
@@ -380,6 +384,7 @@ h2 {
 .campo {
   display: flex;
   flex-direction: column;
+  min-width: 0;
   gap: 6px;
   font-size: 13px;
   font-weight: 600;
@@ -388,6 +393,8 @@ h2 {
 
 .campo input,
 .campo select {
+  width: 100%;
+  min-width: 0;
   padding: 10px 12px;
   border: 1px solid var(--borda);
   border-radius: 6px;
@@ -468,30 +475,65 @@ h2 {
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     padding: 10px;
   }
 
+  .marca {
+    order: 1;
+    padding: 0 4px;
+  }
+
+  .link-sair {
+    order: 2;
+    margin-left: auto;
+    padding: 8px 10px;
+  }
+
+  /* menu em linha própria, rolável na horizontal */
   .menu nav {
+    order: 3;
+    flex: 0 0 100%;
     flex-direction: row;
-    flex: 1;
+    gap: 4px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .menu nav a {
+    flex-shrink: 0;
+    white-space: nowrap;
+    padding: 8px 12px;
   }
 
   .em-breve {
     display: none;
   }
 
-  .marca {
-    padding: 0 8px;
+  .topo {
+    padding: 12px 16px;
   }
 
   .pagina {
     padding: 16px;
   }
 
+  .cartao {
+    padding: 16px;
+  }
+
   .tabela {
     display: block;
     overflow-x: auto;
+  }
+
+  .tabela th,
+  .tabela td {
+    white-space: nowrap;
+  }
+
+  .busca {
+    max-width: none;
   }
 }
 
@@ -572,6 +614,8 @@ h2 {
 }
 
 .campo textarea {
+  width: 100%;
+  min-width: 0;
   padding: 10px 12px;
   border: 1px solid var(--borda);
   border-radius: 6px;
@@ -597,7 +641,7 @@ h2 {
 
 .resumo {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
   gap: 12px 24px;
   margin: 0 0 8px;
 }
@@ -643,4 +687,15 @@ h2 {
   gap: 12px;
   align-items: end;
   margin-top: 16px;
+}
+
+/* Responsivo dos formulários de item (depois da regra base) */
+@media (max-width: 760px) {
+  .item-add {
+    grid-template-columns: 1fr;
+  }
+
+  .item-add .btn {
+    width: 100%;
+  }
 }
