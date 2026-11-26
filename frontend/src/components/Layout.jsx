@@ -1,5 +1,13 @@
+import logo from '../assets/logo-sisgom.svg';
 import { useAuth } from '../contexts/AuthContext.jsx';
+import BuildOutlined from '@mui/icons-material/BuildOutlined';
+import LogoutOutlined from '@mui/icons-material/LogoutOutlined';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import PeopleAltOutlined from '@mui/icons-material/PeopleAltOutlined';
+import AssignmentOutlined from '@mui/icons-material/AssignmentOutlined';
+import Inventory2Outlined from '@mui/icons-material/Inventory2Outlined';
+import DirectionsCarOutlined from '@mui/icons-material/DirectionsCarOutlined';
+import ManageAccountsOutlined from '@mui/icons-material/ManageAccountsOutlined';
 
 /* Estrutura das telas - menu lateral, cabeçalho com o usuário e área de conteúdo */
 export default function Layout() {
@@ -15,37 +23,57 @@ export default function Layout() {
     <div className="app">
       <aside className="menu">
         <div className="marca">
-          <strong>
-            SISGOM
-          </strong>
+          <img
+            className="marca-logo"
+            src={logo}
+            alt=""
+          />
 
-          <small>
-            Gestão de Oficinas
-          </small>
+          <div>
+            <strong>
+              SISGOM
+            </strong>
+
+            <small>
+              Gestão de Oficinas
+            </small>
+          </div>
         </div>
 
         <nav>
           <NavLink to="/clientes">
+            <PeopleAltOutlined fontSize="small" />
+
             Clientes
           </NavLink>
 
           <NavLink to="/veiculos">
+            <DirectionsCarOutlined fontSize="small" />
+
             Veículos
           </NavLink>
 
           <NavLink to="/os">
+            <AssignmentOutlined fontSize="small" />
+
             Ordens de Serviço
           </NavLink>
 
           <NavLink to="/servicos">
+            <BuildOutlined fontSize="small" />
+
             Serviços
           </NavLink>
 
           <NavLink to="/pecas">
+            <Inventory2Outlined fontSize="small" />
+
             Peças
           </NavLink>
 
           {pode('ADMIN') && <NavLink to="/usuarios">
+            <ManageAccountsOutlined fontSize="small" />
+
             Usuários
           </NavLink>}
         </nav>
@@ -54,6 +82,8 @@ export default function Layout() {
           className="link-sair"
           onClick={aoSair}
         >
+          <LogoutOutlined fontSize="small" />
+
           Sair
         </button>
       </aside>
