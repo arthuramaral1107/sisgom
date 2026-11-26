@@ -255,8 +255,22 @@ async function listar(req, res) {
       v.placa,
       v.marca,
       v.modelo,
-      c.nome AS cliente_nome
-      ${juncoes} ${filtro}
+      c.nome AS cliente_nome,
+      CASE
+        WHEN os.status <> 'finalizada' THEN NULL
+        WHEN COALESCE(pg.total_pago, 0) >= os.valor_total THEN 'pago'
+        WHEN COALESCE(pg.total_pago, 0) > 0 THEN 'parcial'
+        ELSE 'pendente'
+      END AS situacao_pagamento
+      ${juncoes}
+    LEFT JOIN (
+      SELECT
+        os_id,
+        SUM(valor) AS total_pago
+      FROM pagamento
+      GROUP BY os_id
+    ) pg ON pg.os_id = os.id
+    ${filtro}
     ORDER BY os.id DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}
   `, [
     ...params,

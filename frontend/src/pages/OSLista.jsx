@@ -3,6 +3,7 @@ import StatusOS from '../components/StatusOS.jsx';
 import Paginacao from '../components/Paginacao.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import ModalAlerta from '../components/ModalAlerta.jsx';
+import PagamentoOS from '../components/PagamentoOS.jsx';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useCallback, useEffect, useState } from 'react';
 import { formatarDataHora, formatarMoeda, useDebounce } from '../hooks.js';
@@ -166,6 +167,10 @@ export default function OSLista() {
                         </th>
 
                         <th>
+                            Pagamento
+                        </th>
+
+                        <th>
                             Total
                         </th>
 
@@ -199,6 +204,12 @@ export default function OSLista() {
                             </td>
 
                             <td>
+                                <PagamentoOS
+                                    status={os.situacao_pagamento}
+                                />
+                            </td>
+
+                            <td>
                                 {formatarMoeda(os.valor_total)}
                             </td>
 
@@ -213,7 +224,7 @@ export default function OSLista() {
                     {!carregando && resp.dados.length === 0 && (
                         <tr>
                             <td
-                                colSpan="7"
+                                colSpan="8"
                                 className="vazio"
                             >
                                 Nenhuma ordem de serviço encontrada.

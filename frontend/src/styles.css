@@ -699,3 +699,7 @@ h2 {
     width: 100%;
   }
 }
+
+.texto-fraco {
+  color: var(--cinza);
+}
