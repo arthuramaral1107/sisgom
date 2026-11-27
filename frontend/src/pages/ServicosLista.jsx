@@ -1,14 +1,10 @@
-import {
-  BuildOutlined,
-  DeleteForeverOutlined,
-  EditOutlined
-} from '../icones.js';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api.js';
 import { formatarMoeda, useDebounce } from '../hooks.js';
 import { useCallback, useEffect, useState } from 'react';
 import { useAuth, useConfirmar } from '../contexts/index.js';
-import { BotaoIcone, Carregando, ModalAlerta, Paginacao } from '../components/index.js';
+import { EditOutlined, BuildOutlined, DeleteForeverOutlined } from '../icones.js';
+import { Paginacao, BotaoIcone, Carregando, ModalAlerta } from '../components/index.js';
 
 /* Quantidade de registros por página */
 const LIMITE = 10;
@@ -117,9 +113,9 @@ export default function ServicosLista() {
               Valor padrão
             </th>
 
-            <th className="acoes">
+            {podeEditar && <th className="acoes">
               Ações
-            </th>
+            </th>}
           </tr>
         </thead>
 
@@ -134,12 +130,12 @@ export default function ServicosLista() {
                 {formatarMoeda(servico.valor_padrao)}
               </td>
 
-              <td className="acoes">
-                {podeEditar && <BotaoIcone
+              {podeEditar && <td className="acoes">
+                <BotaoIcone
                   to={`/servicos/${servico.id}`}
                   icone={EditOutlined}
                   rotulo="Editar"
-                />}
+                />
 
                 {pode('ADMIN') && <BotaoIcone
                   icone={DeleteForeverOutlined}
@@ -147,14 +143,14 @@ export default function ServicosLista() {
                   perigo
                   onClick={() => excluir(servico)}
                 />}
-              </td>
+              </td>}
             </tr>
           ))}
 
           {carregando && resp.dados.length === 0 && (
             <tr>
               <td
-                colSpan="5"
+                colSpan={podeEditar ? 3 : 2}
                 className="vazio"
               >
                 <Carregando />
@@ -165,7 +161,7 @@ export default function ServicosLista() {
           {!carregando && resp.dados.length === 0 && (
             <tr>
               <td
-                colSpan="3"
+                colSpan={podeEditar ? 3 : 2}
                 className="vazio"
               >
                 Nenhum serviço encontrado.

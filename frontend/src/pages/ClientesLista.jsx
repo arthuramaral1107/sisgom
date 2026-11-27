@@ -124,9 +124,9 @@ export default function ClientesLista() {
               E-mail
             </th>
 
-            <th className="acoes">
+            {podeEditar && <th className="acoes">
               Ações
-            </th>
+            </th>}
           </tr>
         </thead>
 
@@ -149,12 +149,12 @@ export default function ClientesLista() {
                 {c.email}
               </td>
 
-              <td className="acoes">
-                {podeEditar && <BotaoIcone
+              {podeEditar && <td className="acoes">
+                <BotaoIcone
                   to={`/clientes/${c.id}`}
                   icone={EditOutlined}
                   rotulo="Editar"
-                />}
+                />
 
                 {pode('ADMIN') && <BotaoIcone
                   icone={DeleteForeverOutlined}
@@ -162,14 +162,14 @@ export default function ClientesLista() {
                   perigo
                   onClick={() => excluir(c)}
                 />}
-              </td>
+              </td>}
             </tr>
           ))}
 
           {carregando && resp.dados.length === 0 && (
             <tr>
               <td
-                colSpan="5"
+                colSpan={podeEditar ? 5 : 4}
                 className="vazio"
               >
                 <Carregando />
@@ -180,7 +180,7 @@ export default function ClientesLista() {
           {!carregando && resp.dados.length === 0 && (
             <tr>
               <td
-                colSpan="5"
+                colSpan={podeEditar ? 5 : 4}
                 className="vazio"
               >
                 Nenhum cliente encontrado.

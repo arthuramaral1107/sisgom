@@ -1,6 +1,6 @@
 import {
-  DeleteForeverOutlined,
   EditOutlined,
+  DeleteForeverOutlined,
   Settings
 } from '../icones.js';
 import {
@@ -158,9 +158,9 @@ export default function PecasLista() {
               Situação
             </th>
 
-            <th className="acoes">
+            {podeEditar && <th className="acoes">
               Ações
-            </th>
+            </th>}
           </tr>
         </thead>
 
@@ -194,12 +194,12 @@ export default function PecasLista() {
                 />
               </td>
 
-              <td className="acoes">
-                {podeEditar && <BotaoIcone
+              {podeEditar && <td className="acoes">
+                <BotaoIcone
                   to={`/pecas/${peca.id}`}
                   icone={EditOutlined}
                   rotulo="Editar"
-                />}
+                />
 
                 {pode('ADMIN') && <BotaoIcone
                   icone={DeleteForeverOutlined}
@@ -207,14 +207,14 @@ export default function PecasLista() {
                   perigo
                   onClick={() => excluir(peca)}
                 />}
-              </td>
+              </td>}
             </tr>
           ))}
 
           {carregando && resp.dados.length === 0 && (
             <tr>
               <td
-                colSpan="5"
+                colSpan={podeEditar ? 7 : 6}
                 className="vazio"
               >
                 <Carregando />
@@ -225,7 +225,7 @@ export default function PecasLista() {
           {!carregando && resp.dados.length === 0 && (
             <tr>
               <td
-                colSpan="7"
+                colSpan={podeEditar ? 7 : 6}
                 className="vazio"
               >
                 Nenhuma peça encontrada.

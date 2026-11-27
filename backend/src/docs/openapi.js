@@ -571,6 +571,20 @@ const especificacao = {
                     }
                 }
             },
+            OSAtualizacao: {
+                type: 'object',
+                required: ['defeito_relatado'],
+                properties: {
+                    mecanico_id: {
+                        type: 'integer',
+                        description: 'Opcional - precisa ser um mecânico ativo.'
+                    },
+                    defeito_relatado: {
+                        type: 'string',
+                        maxLength: 500
+                    }
+                }
+            },
             ItemServico: {
                 type: 'object',
                 properties: {
@@ -888,9 +902,9 @@ const especificacao = {
             put: {
                 tags: ['Ordens de serviço'],
                 summary: 'Atualiza o defeito relatado e o mecânico responsável',
-                description: 'Perfis: ADMIN e ATENDENTE. Só em OS aberta ou em andamento.',
+                description: 'Perfis: ADMIN e ATENDENTE. Só em OS aberta ou em andamento (409 nas demais).',
                 parameters: [idRota()],
-                requestBody: corpo(ref('OSEntrada')),
+                requestBody: corpo(ref('OSAtualizacao')),
                 responses: respostas(
                     ok(OS_DETALHE),
                     400,
@@ -903,7 +917,7 @@ const especificacao = {
             delete: {
                 tags: ['Ordens de serviço'],
                 summary: 'Exclui a OS',
-                description: 'Perfil: ADMIN. Só OS sem serviços nem peças.',
+                description: 'Perfil: ADMIN. Só OS aberta ou cancelada (409 nas demais).',
                 parameters: [idRota()],
                 responses: respostas(
                     semCorpo,
