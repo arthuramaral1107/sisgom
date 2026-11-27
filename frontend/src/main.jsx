@@ -3,8 +3,7 @@ import React from 'react';
 import App from './App.jsx';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext.jsx';
-import { ConfirmacaoProvider } from './contexts/ConfirmacaoContext.jsx';
+import { AuthProvider, ConfirmacaoProvider } from './contexts/index.js';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

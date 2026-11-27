@@ -1,12 +1,20 @@
+import {
+    DeleteForeverOutlined,
+    PlaylistAdd,
+    UndoOutlined
+} from '../icones.js';
+import {
+    BotaoIcone,
+    Campo,
+    Carregando,
+    ModalAlerta,
+    StatusOS
+} from '../components/index.js';
 import { api } from '../services/api.js';
-import Campo from '../components/Campo.jsx';
 import { useEffect, useState } from 'react';
-import StatusOS from '../components/StatusOS.jsx';
-import { useAuth } from '../contexts/AuthContext.jsx';
-import ModalAlerta from '../components/ModalAlerta.jsx';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useAuth, useConfirmar } from '../contexts/index.js';
 import { formatarDataHora, formatarMoeda } from '../hooks.js';
-import { useConfirmar } from '../contexts/ConfirmacaoContext.jsx';
 
 /* Valores iniciais do formulário de serviço da OS */
 const NOVO_SERVICO = {
@@ -216,9 +224,7 @@ export default function OSDetalhe() {
     if (!os) {
         return erro ? <div className="alerta erro">
             {erro}
-        </div> : <div className="carregando">
-            Carregando...
-        </div>;
+        </div> : <Carregando />;
     }
 
     const editavel = [
@@ -378,7 +384,7 @@ export default function OSDetalhe() {
 
                         <div className="botoes">
                             <button
-                                className="btn"
+                                className="btn primario"
                                 disabled={ocupado}
                             >
                                 Salvar alterações
@@ -416,7 +422,9 @@ export default function OSDetalhe() {
                                 Subtotal
                             </th>
 
-                            {editavel && <th />}
+                            {editavel && <th className="acoes">
+                                Ações
+                            </th>}
                         </tr>
                     </thead>
 
@@ -441,13 +449,13 @@ export default function OSDetalhe() {
 
                                 {editavel && (
                                     <td className="acoes">
-                                        <button
-                                            className="link perigo"
+                                        <BotaoIcone
+                                            icone={DeleteForeverOutlined}
+                                            rotulo="Remover"
+                                            perigo
                                             disabled={ocupado}
                                             onClick={() => removerServico(item)}
-                                        >
-                                            Remover
-                                        </button>
+                                        />
                                     </td>
                                 )}
                             </tr>
@@ -518,7 +526,11 @@ export default function OSDetalhe() {
                             className="btn"
                             disabled={ocupado}
                         >
-                            + Adicionar
+                            <PlaylistAdd
+                                fontSize="small"
+                            />
+
+                            Adicionar
                         </button>
                     </form>
                 )}
@@ -556,7 +568,9 @@ export default function OSDetalhe() {
                                 Em estoque
                             </th>
 
-                            {editavel && <th />}
+                            {editavel && <th className="acoes">
+                                Ações
+                            </th>}
                         </tr>
                     </thead>
 
@@ -589,13 +603,13 @@ export default function OSDetalhe() {
 
                                 {editavel && (
                                     <td className="acoes">
-                                        <button
-                                            className="link perigo"
+                                        <BotaoIcone
+                                            icone={DeleteForeverOutlined}
+                                            rotulo="Remover"
+                                            perigo
                                             disabled={ocupado}
                                             onClick={() => removerPeca(item)}
-                                        >
-                                            Remover
-                                        </button>
+                                        />
                                     </td>
                                 )}
                             </tr>
@@ -659,7 +673,11 @@ export default function OSDetalhe() {
                             className="btn"
                             disabled={ocupado}
                         >
-                            + Adicionar
+                            <PlaylistAdd
+                                fontSize="small"
+                            />
+
+                            Adicionar
                         </button>
                     </form>
                 )}
@@ -724,7 +742,9 @@ export default function OSDetalhe() {
                                     Valor
                                 </th>
 
-                                {podeEstornar && <th />}
+                                {podeEstornar && <th className="acoes">
+                                    Ações
+                                </th>}
                             </tr>
                         </thead>
 
@@ -745,13 +765,13 @@ export default function OSDetalhe() {
 
                                     {podeEstornar && (
                                         <td className="acoes">
-                                            <button
-                                                className="link perigo"
+                                            <BotaoIcone
+                                                icone={UndoOutlined}
+                                                rotulo="Estornar"
+                                                perigo
                                                 disabled={ocupado}
                                                 onClick={() => estornarPagamento(pagamento)}
-                                            >
-                                                Estornar
-                                            </button>
+                                            />
                                         </td>
                                     )}
                                 </tr>
@@ -854,7 +874,7 @@ export default function OSDetalhe() {
 
                     {podeCancelar && (
                         <button
-                            className="btn perigo"
+                            className="btn"
                             disabled={ocupado}
                             onClick={() => mudarStatus(
                                 'cancelada',

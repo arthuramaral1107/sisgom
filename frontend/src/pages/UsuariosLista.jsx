@@ -1,8 +1,17 @@
+import {
+    EditOutlined,
+    PersonAddAltOutlined
+} from '../icones.js';
+import {
+    BotaoIcone,
+    Carregando,
+    ModalAlerta,
+    Paginacao,
+    SituacaoPonto
+} from '../components/index.js';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api.js';
-import Paginacao from '../components/Paginacao.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
-import ModalAlerta from '../components/ModalAlerta.jsx';
 import { useCallback, useEffect, useState } from 'react';
 import { ROTULOS_PERFIL, useDebounce } from '../hooks.js';
 import { useConfirmar } from '../contexts/ConfirmacaoContext.jsx';
@@ -84,7 +93,11 @@ export default function UsuariosLista() {
                     className="btn primario"
                     to="/usuarios/novo"
                 >
-                    + Novo usuário
+                    <PersonAddAltOutlined
+                        fontSize="small"
+                    />
+
+                    Novo usuário
                 </Link>
             </div>
 
@@ -119,7 +132,9 @@ export default function UsuariosLista() {
                             Situação
                         </th>
 
-                        <th />
+                        <th className="acoes">
+                            Ações
+                        </th>
                     </tr>
                 </thead>
 
@@ -139,27 +154,32 @@ export default function UsuariosLista() {
                             </td>
 
                             <td>
-                                <span className={`etiqueta situacao-${item.ativo ? 'ativo' : 'inativo'}`}>
-                                    {item.ativo ? 'Ativo' : 'Inativo'}
-                                </span>
+                                <SituacaoPonto
+                                    texto={item.ativo ? 'Ativo' : 'Inativo'}
+                                    cor={item.ativo ? 'verde' : 'vermelho'}
+                                />
                             </td>
 
                             <td className="acoes">
-                                <Link to={`/usuarios/${item.id}`}>
-                                    Editar
-                                </Link>
-
-                                {item.id !== usuario.id && (
-                                    <button
-                                        className={`link ${item.ativo ? 'perigo' : ''}`}
-                                        onClick={() => alternarAtivo(item)}
-                                    >
-                                        {item.ativo ? 'Inativar' : 'Reativar'}
-                                    </button>
-                                )}
+                                <BotaoIcone
+                                    to={`/usuarios/${item.id}`}
+                                    icone={EditOutlined}
+                                    rotulo="Editar"
+                                />
                             </td>
                         </tr>
                     ))}
+
+                    {carregando && resp.dados.length === 0 && (
+                        <tr>
+                            <td
+                                colSpan="5"
+                                className="vazio"
+                            >
+                                <Carregando />
+                            </td>
+                        </tr>
+                    )}
 
                     {!carregando && resp.dados.length === 0 && (
                         <tr>

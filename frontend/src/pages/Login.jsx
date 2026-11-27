@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import Campo from '../components/Campo.jsx';
-import { useAuth } from '../contexts/AuthContext.jsx';
-import ModalAlerta from '../components/ModalAlerta.jsx';
+import { useDemora } from '../hooks.js';
+import logo from '../assets/logo-sisgom.svg';
+import { useAuth } from '../contexts/index.js';
 import { Navigate, useNavigate } from 'react-router-dom';
+import { Campo, ModalAlerta } from '../components/index.js';
 
 /* Tela de login */
 export default function Login() {
@@ -16,9 +17,10 @@ export default function Login() {
 
   const [erro, setErro] = useState('');
   const [enviando, setEnviando] = useState(false);
+  const demorando = useDemora(enviando);
 
   if (usuario) return <Navigate
-    to="/clientes"
+    to="/painel"
     replace
   />;
 
@@ -36,7 +38,7 @@ export default function Login() {
         dados.senha
       );
 
-      navegar('/clientes');
+      navegar('/painel');
     } catch (error) {
       setErro(
         error.status === 429 ? 'Muitas tentativas. Aguarde alguns minutos.' : error.message
@@ -53,6 +55,12 @@ export default function Login() {
         onSubmit={aoEnviar}
       >
         <h1>
+          <img
+            className="login-logo"
+            src={logo}
+            alt=""
+          />
+
           SISGOM
         </h1>
 
@@ -93,6 +101,10 @@ export default function Login() {
         >
           {enviando ? 'Entrando...' : 'Entrar'}
         </button>
+
+        {demorando && <small className="aviso-servidor">
+          Acordando o servidor, a primeira vez pode levar até 1 minuto.
+        </small>}
       </form>
     </div>
   );

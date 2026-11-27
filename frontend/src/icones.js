@@ -1,0 +1,23 @@
+/* Ícones do sistema - um único ponto de importação (Material UI) */
+export { default as AssignmentAdd } from '@mui/icons-material/AssignmentAdd';
+export { default as AssignmentOutlined } from '@mui/icons-material/AssignmentOutlined';
+export { default as BuildOutlined } from '@mui/icons-material/BuildOutlined';
+export { default as CommuteRounded } from '@mui/icons-material/CommuteRounded';
+export { default as ConstructionRounded } from '@mui/icons-material/ConstructionRounded';
+export { default as DashboardOutlined } from '@mui/icons-material/DashboardOutlined';
+export { default as DeleteForeverOutlined } from '@mui/icons-material/DeleteForeverOutlined';
+export { default as DriveEtaOutlined } from '@mui/icons-material/DriveEtaOutlined';
+export { default as EditOutlined } from '@mui/icons-material/EditOutlined';
+export { default as HistoryOutlined } from '@mui/icons-material/HistoryOutlined';
+export { default as Inventory2Outlined } from '@mui/icons-material/Inventory2Outlined';
+export { default as LaunchRounded } from '@mui/icons-material/LaunchRounded';
+export { default as LogoutOutlined } from '@mui/icons-material/LogoutOutlined';
+export { default as ManageAccountsOutlined } from '@mui/icons-material/ManageAccountsOutlined';
+export { default as PeopleAltOutlined } from '@mui/icons-material/PeopleAltOutlined';
+export { default as PersonAddAltOutlined } from '@mui/icons-material/PersonAddAltOutlined';
+export { default as PlaylistAdd } from '@mui/icons-material/PlaylistAdd';
+export { default as Settings } from '@mui/icons-material/Settings';
+export { default as ToggleOff } from '@mui/icons-material/ToggleOff';
+export { default as ToggleOn } from '@mui/icons-material/ToggleOn';
+export { default as UndoOutlined } from '@mui/icons-material/UndoOutlined';
+export { default as VisibilityOutlined } from '@mui/icons-material/VisibilityOutlined';

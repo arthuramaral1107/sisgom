@@ -1,11 +1,15 @@
+import {
+  DeleteForeverOutlined,
+  DriveEtaOutlined,
+  EditOutlined,
+  HistoryOutlined
+} from '../icones.js';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api.js';
 import { useDebounce } from '../hooks.js';
-import Paginacao from '../components/Paginacao.jsx';
-import { useAuth } from '../contexts/AuthContext.jsx';
-import ModalAlerta from '../components/ModalAlerta.jsx';
 import { useCallback, useEffect, useState } from 'react';
-import { useConfirmar } from '../contexts/ConfirmacaoContext.jsx';
+import { useAuth, useConfirmar } from '../contexts/index.js';
+import { BotaoIcone, Carregando, ModalAlerta, Paginacao } from '../components/index.js';
 
 /* Quantidade de registros por página */
 const LIMITE = 10;
@@ -83,7 +87,11 @@ export default function VeiculosLista() {
           className="btn primario"
           to="/veiculos/novo"
         >
-          + Novo veículo
+          <DriveEtaOutlined
+            fontSize="small"
+          />
+
+          Novo veículo
         </Link>}
       </div>
 
@@ -122,7 +130,9 @@ export default function VeiculosLista() {
               Proprietário
             </th>
 
-            <th />
+            <th className="acoes">
+              Ações
+            </th>
           </tr>
         </thead>
 
@@ -150,23 +160,38 @@ export default function VeiculosLista() {
               </td>
 
               <td className="acoes">
-                <Link to={`/os?veiculo=${v.id}`}>
-                  Histórico
-                </Link>
+                <BotaoIcone
+                  to={`/os?veiculo=${v.id}`}
+                  icone={HistoryOutlined}
+                  rotulo="Histórico de OS"
+                />
 
-                {podeEditar && <Link to={`/veiculos/${v.id}`}>
-                  Editar
-                </Link>}
+                {podeEditar && <BotaoIcone
+                  to={`/veiculos/${v.id}`}
+                  icone={EditOutlined}
+                  rotulo="Editar"
+                />}
 
-                {pode('ADMIN') && <button
-                  className="link perigo"
+                {pode('ADMIN') && <BotaoIcone
+                  icone={DeleteForeverOutlined}
+                  rotulo="Excluir"
+                  perigo
                   onClick={() => excluir(v)}
-                >
-                  Excluir
-                </button>}
+                />}
               </td>
             </tr>
           ))}
+
+          {carregando && resp.dados.length === 0 && (
+            <tr>
+              <td
+                colSpan="5"
+                className="vazio"
+              >
+                <Carregando />
+              </td>
+            </tr>
+          )}
 
           {!carregando && resp.dados.length === 0 && (
             <tr>

@@ -1,11 +1,14 @@
+import {
+  BuildOutlined,
+  DeleteForeverOutlined,
+  EditOutlined
+} from '../icones.js';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api.js';
-import Paginacao from '../components/Paginacao.jsx';
-import { useAuth } from '../contexts/AuthContext.jsx';
-import ModalAlerta from '../components/ModalAlerta.jsx';
 import { formatarMoeda, useDebounce } from '../hooks.js';
 import { useCallback, useEffect, useState } from 'react';
-import { useConfirmar } from '../contexts/ConfirmacaoContext.jsx';
+import { useAuth, useConfirmar } from '../contexts/index.js';
+import { BotaoIcone, Carregando, ModalAlerta, Paginacao } from '../components/index.js';
 
 /* Quantidade de registros por página */
 const LIMITE = 10;
@@ -83,7 +86,11 @@ export default function ServicosLista() {
           className="btn primario"
           to="/servicos/novo"
         >
-          + Novo serviço
+          <BuildOutlined
+            fontSize="small"
+          />
+
+          Novo serviço
         </Link>}
       </div>
 
@@ -110,7 +117,9 @@ export default function ServicosLista() {
               Valor padrão
             </th>
 
-            <th />
+            <th className="acoes">
+              Ações
+            </th>
           </tr>
         </thead>
 
@@ -126,21 +135,32 @@ export default function ServicosLista() {
               </td>
 
               <td className="acoes">
-                {podeEditar && <Link to={`/servicos/${servico.id}`}>
-                  Editar
-                </Link>}
+                {podeEditar && <BotaoIcone
+                  to={`/servicos/${servico.id}`}
+                  icone={EditOutlined}
+                  rotulo="Editar"
+                />}
 
-                {pode('ADMIN') && (
-                  <button
-                    className="link perigo"
-                    onClick={() => excluir(servico)}
-                  >
-                    Excluir
-                  </button>
-                )}
+                {pode('ADMIN') && <BotaoIcone
+                  icone={DeleteForeverOutlined}
+                  rotulo="Excluir"
+                  perigo
+                  onClick={() => excluir(servico)}
+                />}
               </td>
             </tr>
           ))}
+
+          {carregando && resp.dados.length === 0 && (
+            <tr>
+              <td
+                colSpan="5"
+                className="vazio"
+              >
+                <Carregando />
+              </td>
+            </tr>
+          )}
 
           {!carregando && resp.dados.length === 0 && (
             <tr>

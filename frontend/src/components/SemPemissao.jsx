@@ -1,5 +1,5 @@
 import { ROTULOS_PERFIL } from '../hooks.js';
-import { useAuth } from '../contexts/AuthContext.jsx';
+import { useAuth } from '../contexts/index.js';
 import { Link, useLocation } from 'react-router-dom';
 
 /* Tela exibida quando o perfil do usuário não tem acesso à rota */
@@ -23,7 +23,7 @@ export default function SemPermissao() {
 
             <Link
                 className="btn primario"
-                to="/clientes"
+                to="/painel"
             >
                 Voltar ao início
             </Link>

@@ -1,9 +1,8 @@
 import { api } from '../services/api.js';
-import Campo from '../components/Campo.jsx';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { detalhesParaObjeto } from '../hooks.js';
-import ModalAlerta from '../components/ModalAlerta.jsx';
+import { Campo, ModalAlerta } from '../components/index.js';
 
 /* Valores iniciais do formulário */
 const VAZIO = {
@@ -166,18 +165,18 @@ export default function OSForm() {
 
                 <div className="botoes">
                     <button
-                        className="btn primario"
-                        disabled={enviando}
-                    >
-                        {enviando ? 'Abrindo...' : 'Abrir OS'}
-                    </button>
-
-                    <button
                         type="button"
                         className="btn"
                         onClick={() => navegar('/os')}
                     >
                         Cancelar
+                    </button>
+
+                    <button
+                        className="btn primario"
+                        disabled={enviando}
+                    >
+                        {enviando ? 'Salvando...' : 'Salvar'}
                     </button>
                 </div>
             </form>

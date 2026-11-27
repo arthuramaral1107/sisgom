@@ -1,10 +1,13 @@
+import {
+    ToggleOff,
+    ToggleOn
+} from '../icones.js';
 import { api } from '../services/api.js';
 import { useEffect, useState } from 'react';
-import Campo from '../components/Campo.jsx';
-import { useAuth } from '../contexts/AuthContext.jsx';
-import ModalAlerta from '../components/ModalAlerta.jsx';
+import { useAuth } from '../contexts/index.js';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ROTULOS_PERFIL, detalhesParaObjeto } from '../hooks.js';
+import { Campo, ModalAlerta } from '../components/index.js';
+import { detalhesParaObjeto, ROTULOS_PERFIL } from '../hooks.js';
 
 /* Valores iniciais do formulário */
 const VAZIO = {
@@ -23,6 +26,8 @@ export default function UsuarioForm() {
     const [erros, setErros] = useState({});
     const [erroGeral, setErroGeral] = useState('');
     const [enviando, setEnviando] = useState(false);
+    const [ativo, setAtivo] = useState(true);
+    const [ativoInicial, setAtivoInicial] = useState(true);
 
     // o administrador não pode mudar o próprio perfil (a API também barra)
     const proprio = Boolean(id) && usuario.id === Number(id);
@@ -30,12 +35,17 @@ export default function UsuarioForm() {
     useEffect(() => {
         if (!id) return;
 
-        api.usuarios.buscar(id).then((item) => setDados({
-            nome: item.nome,
-            email: item.email,
-            perfil: item.perfil,
-            senha: ''
-        })).catch((error) => setErroGeral(error.message));
+        api.usuarios.buscar(id).then((item) => {
+            setDados({
+                nome: item.nome,
+                email: item.email,
+                perfil: item.perfil,
+                senha: ''
+            });
+
+            setAtivo(item.ativo);
+            setAtivoInicial(item.ativo);
+        }).catch((error) => setErroGeral(error.message));
     }, [id]);
 
     const aoMudar = (campo, valor) => {
@@ -61,6 +71,11 @@ export default function UsuarioForm() {
             if (id) await api.usuarios.atualizar(id, dados);
             else await api.usuarios.criar(dados);
 
+            // o status ativo/inativo tem rota própria na API
+            if (id && !proprio && ativo !== ativoInicial) {
+                await api.usuarios.alterarAtivo(id, ativo);
+            }
+
             navegar('/usuarios');
         } catch (error) {
             setErros(detalhesParaObjeto(error.detalhes));
@@ -72,9 +87,24 @@ export default function UsuarioForm() {
 
     return (
         <>
-            <h2>
-                {id ? 'Editar usuário' : 'Novo usuário'}
-            </h2>
+            <div className="titulo-linha">
+                <h2>
+                    {id ? 'Editar usuário' : 'Novo usuário'}
+                </h2>
+
+                {id && !proprio && <button
+                    type="button"
+                    className={`botao-alternar ${ativo ? '' : 'desligado'}`}
+                    onClick={() => setAtivo(!ativo)}
+                >
+                    {ativo
+                        ? <ToggleOn fontSize="large" />
+                        : <ToggleOff fontSize="large" />
+                    }
+
+                    {ativo ? 'Ativo' : 'Inativo'}
+                </button>}
+            </div>
 
             <form
                 className="cartao formulario"
@@ -154,18 +184,18 @@ export default function UsuarioForm() {
 
                 <div className="botoes">
                     <button
-                        className="btn primario"
-                        disabled={enviando}
-                    >
-                        {enviando ? 'Salvando...' : 'Salvar'}
-                    </button>
-
-                    <button
                         type="button"
                         className="btn"
                         onClick={() => navegar('/usuarios')}
                     >
                         Cancelar
+                    </button>
+
+                    <button
+                        className="btn primario"
+                        disabled={enviando}
+                    >
+                        {enviando ? 'Salvando...' : 'Salvar'}
                     </button>
                 </div>
             </form>

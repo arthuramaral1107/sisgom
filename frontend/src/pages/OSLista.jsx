@@ -1,9 +1,18 @@
+import {
+    AssignmentAdd,
+    LaunchRounded,
+    VisibilityOutlined
+} from '../icones.js';
+import {
+    BotaoIcone,
+    Carregando,
+    ModalAlerta,
+    PagamentoOS,
+    Paginacao,
+    StatusOS
+} from '../components/index.js';
 import { api } from '../services/api.js';
-import StatusOS from '../components/StatusOS.jsx';
-import Paginacao from '../components/Paginacao.jsx';
-import { useAuth } from '../contexts/AuthContext.jsx';
-import ModalAlerta from '../components/ModalAlerta.jsx';
-import PagamentoOS from '../components/PagamentoOS.jsx';
+import { useAuth } from '../contexts/index.js';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useCallback, useEffect, useState } from 'react';
 import { formatarDataHora, formatarMoeda, useDebounce } from '../hooks.js';
@@ -86,20 +95,30 @@ export default function OSLista() {
                     className="btn primario"
                     to="/os/nova"
                 >
-                    + Nova OS
+                    <AssignmentAdd
+                        fontSize="small"
+                    />
+
+                    Nova OS
                 </Link>}
             </div>
 
             {veiculoId && <div className="alerta info">
-                Histórico do veículo {veiculo
-                    ? `${veiculo.placa} - ${veiculo.marca} ${veiculo.modelo}`
-                    : `#${veiculoId}`}
+                <span>
+                    Histórico do veículo {veiculo
+                        ? `${veiculo.placa} - ${veiculo.marca} ${veiculo.modelo}`
+                        : `#${veiculoId}`}
+                </span>
 
                 <button
-                    className="link"
+                    className="btn contorno"
                     onClick={() => setParametros({})}
                 >
-                    Ver todas as OS
+                    <VisibilityOutlined
+                        fontSize="small"
+                    />
+
+                    Ver todas as OSs
                 </button>
             </div>}
 
@@ -155,6 +174,10 @@ export default function OSLista() {
                         </th>
 
                         <th>
+                            Status
+                        </th>
+
+                        <th>
                             Cliente
                         </th>
 
@@ -163,18 +186,16 @@ export default function OSLista() {
                         </th>
 
                         <th>
-                            Status
+                            Total
                         </th>
 
                         <th>
                             Pagamento
                         </th>
 
-                        <th>
-                            Total
+                        <th className="acoes">
+                            Ações
                         </th>
-
-                        <th />
                     </tr>
                 </thead>
 
@@ -190,6 +211,12 @@ export default function OSLista() {
                             </td>
 
                             <td>
+                                <StatusOS
+                                    status={os.status}
+                                />
+                            </td>
+
+                            <td>
                                 {os.cliente_nome}
                             </td>
 
@@ -198,28 +225,35 @@ export default function OSLista() {
                             </td>
 
                             <td>
-                                <StatusOS
-                                    status={os.status}
-                                />
+                                {formatarMoeda(os.valor_total)}
                             </td>
 
                             <td>
                                 <PagamentoOS
-                                    status={os.situacao_pagamento}
+                                    situacao={os.situacao_pagamento}
                                 />
                             </td>
 
-                            <td>
-                                {formatarMoeda(os.valor_total)}
-                            </td>
-
                             <td className="acoes">
-                                <Link to={`/os/${os.id}`}>
-                                    Abrir
-                                </Link>
+                                <BotaoIcone
+                                    to={`/os/${os.id}`}
+                                    icone={LaunchRounded}
+                                    rotulo="Abrir"
+                                />
                             </td>
                         </tr>
                     ))}
+
+                    {carregando && resp.dados.length === 0 && (
+                        <tr>
+                            <td
+                                colSpan="5"
+                                className="vazio"
+                            >
+                                <Carregando />
+                            </td>
+                        </tr>
+                    )}
 
                     {!carregando && resp.dados.length === 0 && (
                         <tr>

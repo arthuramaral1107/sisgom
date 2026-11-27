@@ -1,11 +1,14 @@
+import {
+  DeleteForeverOutlined,
+  EditOutlined,
+  PersonAddAltOutlined
+} from '../icones.js';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api.js';
 import { useDebounce } from '../hooks.js';
-import Paginacao from '../components/Paginacao.jsx';
-import { useAuth } from '../contexts/AuthContext.jsx';
-import ModalAlerta from '../components/ModalAlerta.jsx';
 import { useCallback, useEffect, useState } from 'react';
-import { useConfirmar } from '../contexts/ConfirmacaoContext.jsx';
+import { useAuth, useConfirmar } from '../contexts/index.js';
+import { BotaoIcone, Carregando, Paginacao, ModalAlerta } from '../components/index.js';
 
 /* Quantidade de registros por página */
 const LIMITE = 10;
@@ -82,7 +85,11 @@ export default function ClientesLista() {
           className="btn primario"
           to="/clientes/novo"
         >
-          + Novo cliente
+          <PersonAddAltOutlined
+            fontSize="small"
+          />
+
+          Novo cliente
         </Link>}
       </div>
 
@@ -117,7 +124,9 @@ export default function ClientesLista() {
               E-mail
             </th>
 
-            <th />
+            <th className="acoes">
+              Ações
+            </th>
           </tr>
         </thead>
 
@@ -141,19 +150,32 @@ export default function ClientesLista() {
               </td>
 
               <td className="acoes">
-                {podeEditar && <Link to={`/clientes/${c.id}`}>
-                  Editar
-                </Link>}
+                {podeEditar && <BotaoIcone
+                  to={`/clientes/${c.id}`}
+                  icone={EditOutlined}
+                  rotulo="Editar"
+                />}
 
-                {pode('ADMIN') && <button
-                  className="link perigo"
+                {pode('ADMIN') && <BotaoIcone
+                  icone={DeleteForeverOutlined}
+                  rotulo="Excluir"
+                  perigo
                   onClick={() => excluir(c)}
-                >
-                  Excluir
-                </button>}
+                />}
               </td>
             </tr>
           ))}
+
+          {carregando && resp.dados.length === 0 && (
+            <tr>
+              <td
+                colSpan="5"
+                className="vazio"
+              >
+                <Carregando />
+              </td>
+            </tr>
+          )}
 
           {!carregando && resp.dados.length === 0 && (
             <tr>

@@ -7,6 +7,10 @@
   --primaria-esc: #1e40af;
   --perigo: #b42318;
   --menu: #111827;
+  --cor-1: #111827;
+  --cor-1-claro: #1f2937;
+  --cor-2: #1d4ed8;
+  --cor-2-claro: #1e40af;
 }
 
 * {
@@ -128,8 +132,11 @@ h2 {
 .topo {
   background: #fff;
   border-bottom: 1px solid var(--borda);
-  padding: 18px 28px;
-  text-align: right;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 28px;
 }
 
 .topo em {
@@ -154,26 +161,34 @@ h2 {
 }
 
 .btn {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
   padding: 10px 18px;
-  border: 1px solid var(--borda);
-  background: #fff;
+  border: 1px solid var(--cor-2);
+  background: var(--cor-2);
   border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
-  color: var(--texto);
+  color: #fff;
   text-decoration: none;
+  transition: background .15s;
+}
+
+.btn:hover {
+  background: var(--cor-2-claro);
 }
 
 .btn.primario {
-  background: var(--primaria);
-  border-color: var(--primaria);
-  color: #fff;
+  background: var(--cor-1);
+  border-color: var(--cor-1);
   font-weight: 600;
 }
 
 .btn.primario:hover {
-  background: var(--primaria-esc);
+  background: var(--cor-1-claro);
 }
 
 .btn:disabled {
@@ -224,11 +239,11 @@ h2 {
 }
 
 .acoes {
-  text-align: right !important;
+  text-align: center !important;
   white-space: nowrap;
 }
 
-.acoes a,
+.acoes a:not(.botao-icone),
 .link {
   color: var(--primaria);
   text-decoration: none;
@@ -265,7 +280,7 @@ h2 {
   border: 1px solid var(--borda);
   background: #fff;
   border-radius: 4px;
-  padding: 4px 10px;
+  padding: 8px 14px;
   cursor: pointer;
 }
 
@@ -358,9 +373,14 @@ h2 {
 }
 
 .alerta.info {
-  background: #eff6ff;
-  color: var(--primaria);
-  border: 1px solid #bfdbfe;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #fff;
+  color: var(--texto);
+  border: 1px solid var(--borda);
 }
 
 /* Formulários */
@@ -427,6 +447,7 @@ h2 {
 
 .botoes {
   display: flex;
+  justify-content: flex-end;
   gap: 12px;
   margin-top: 22px;
 }
@@ -436,7 +457,7 @@ h2 {
   min-height: 100vh;
   display: grid;
   place-items: center;
-  background: var(--fundo);
+  background: var(--cor-1);
   padding: 16px;
 }
 
@@ -453,9 +474,17 @@ h2 {
 }
 
 .login-cartao h1 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
   margin: 0;
-  text-align: center;
   letter-spacing: 1px;
+}
+
+.login-logo {
+  width: 44px;
+  height: 44px;
 }
 
 .login-cartao p {
@@ -482,12 +511,6 @@ h2 {
   .marca {
     order: 1;
     padding: 0 4px;
-  }
-
-  .link-sair {
-    order: 2;
-    margin-left: auto;
-    padding: 8px 10px;
   }
 
   /* menu em linha própria, rolável na horizontal */
@@ -671,9 +694,24 @@ h2 {
   align-items: center;
 }
 
+.btn.contorno {
+  background: transparent;
+  color: var(--cor-1);
+  border-color: var(--cor-1);
+}
+
+.btn.contorno:hover {
+  background: #e5e7eb;
+}
+
 .btn.perigo {
+  background: #fff;
   color: var(--perigo);
   border-color: #fecdca;
+}
+
+.btn.perigo:hover {
+  background: #fef3f2;
 }
 
 .alerta ul {
@@ -702,4 +740,256 @@ h2 {
 
 .texto-fraco {
   color: var(--cinza);
+}
+
+/* Situação em texto simples com bolinha colorida */
+.situacao-ponto {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #374151;
+}
+
+.situacao-ponto::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--cinza);
+}
+
+.situacao-ponto.azul::before {
+  background: var(--cor-2);
+}
+
+.situacao-ponto.verde::before {
+  background: #16a34a;
+}
+
+.situacao-ponto.amarelo::before {
+  background: #d97706;
+}
+
+.situacao-ponto.vermelho::before {
+  background: #dc2626;
+}
+
+/* Botão de alternar com ícone de caixa de seleção e texto */
+.botao-alternar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border: 0;
+  background: none;
+  color: var(--cor-1);
+  font-size: 14px;
+  cursor: pointer;
+  transition: color .15s;
+}
+
+.botao-alternar:hover {
+  color: var(--cor-2);
+}
+
+.botao-alternar.desligado {
+  color: #9ca3af;
+}
+
+.botao-alternar.desligado:hover {
+  color: var(--cinza);
+}
+
+/* Botão sair no cabeçalho - vermelho ao passar o mouse */
+.botao-sair {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border: 0;
+  background: none;
+  color: var(--cor-1);
+  font-size: 14px;
+  cursor: pointer;
+  transition: color .15s;
+}
+
+.botao-sair:hover {
+  color: var(--perigo);
+}
+
+.botao-alternar:focus-visible {
+  outline: 2px solid #bfdbfe;
+}
+
+/* Botões de ícone nas ações das tabelas (alvo de clique 36px) */
+.botao-icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-left: 4px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--cor-1);
+  cursor: pointer;
+  transition: color .15s;
+}
+
+.botao-icone:hover {
+  color: var(--cor-2);
+}
+
+.botao-icone.perigo:hover {
+  color: var(--perigo);
+}
+
+.botao-icone:focus-visible {
+  outline: 2px solid #bfdbfe;
+}
+
+.botao-icone:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+
+
+/* Painel inicial */
+.indicadores {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.indicador {
+  background: #fff;
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+  padding: 18px 20px;
+}
+
+.indicador span {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cinza);
+}
+
+.indicador strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 24px;
+}
+
+.painel-colunas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  gap: 18px;
+  margin-bottom: 8px;
+}
+
+.painel-colunas .cartao+.cartao {
+  margin-top: 0;
+}
+
+.barras {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.barras li {
+  display: grid;
+  grid-template-columns: 110px 1fr 32px;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.barras strong {
+  text-align: right;
+}
+
+.barra-trilho {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e5e7eb;
+}
+
+.barra-preench {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--cor-2);
+  transition: width .3s;
+}
+
+.lista-simples {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lista-simples li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--borda);
+  font-size: 14px;
+}
+
+.lista-simples li:last-child {
+  border-bottom: 0;
+}
+
+.link-card {
+  display: inline-block;
+  margin-top: 12px;
+  color: var(--cor-1);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color .15s;
+}
+
+.link-card:hover {
+  color: var(--cor-2);
+}
+
+.titulo-secao {
+  margin: 18px 0 0;
+  font-size: 17px;
+}
+
+/* Acabamento - carregamento, linha da tabela e foco */
+.carregando small {
+  display: block;
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+.aviso-servidor {
+  color: var(--cinza);
+  text-align: center;
+}
+
+.tabela tbody tr:hover {
+  background: #f9fafb;
+}
+
+.menu nav a {
+  transition: background .15s, color .15s;
+}
+
+.btn:focus-visible {
+  outline: 2px solid #bfdbfe;
+  outline-offset: 2px;
 }

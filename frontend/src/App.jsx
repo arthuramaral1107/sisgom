@@ -1,18 +1,19 @@
 import {
+  ClienteForm,
+  ClientesLista,
   Login,
+  OSDetalhe,
   OSForm,
   OSLista,
+  Painel,
   PecaForm,
-  OSDetalhe,
   PecasLista,
-  ClienteForm,
-  VeiculoForm,
   ServicoForm,
-  UsuarioForm,
-  ClientesLista,
-  VeiculosLista,
   ServicosLista,
-  UsuariosLista
+  UsuarioForm,
+  UsuariosLista,
+  VeiculoForm,
+  VeiculosLista
 } from './pages/index.js';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { Layout, RotaProtegida } from './components/index.js';
@@ -28,6 +29,11 @@ export default function App() {
 
       <Route element={<RotaProtegida />}>
         <Route element={<Layout />}>
+          <Route
+            path="/painel"
+            element={<Painel />}
+          />
+          
           <Route
             path="/clientes"
             element={<ClientesLista />}
@@ -126,7 +132,7 @@ export default function App() {
         path="*"
         element={
           <Navigate
-            to="/clientes"
+            to="/painel"
             replace
           />
         }

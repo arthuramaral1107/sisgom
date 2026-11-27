@@ -1,11 +1,20 @@
+import {
+  DeleteForeverOutlined,
+  EditOutlined,
+  Settings
+} from '../icones.js';
+import {
+  BotaoIcone,
+  Carregando,
+  ModalAlerta,
+  Paginacao,
+  SituacaoPonto
+} from '../components/index.js';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api.js';
-import Paginacao from '../components/Paginacao.jsx';
-import { useAuth } from '../contexts/AuthContext.jsx';
-import ModalAlerta from '../components/ModalAlerta.jsx';
 import { formatarMoeda, useDebounce } from '../hooks.js';
 import { useCallback, useEffect, useState } from 'react';
-import { useConfirmar } from '../contexts/ConfirmacaoContext.jsx';
+import { useAuth, useConfirmar } from '../contexts/index.js';
 
 /* Quantidade de registros por página */
 const LIMITE = 10;
@@ -90,7 +99,11 @@ export default function PecasLista() {
           className="btn primario"
           to="/pecas/nova"
         >
-          + Nova peça
+          <Settings
+            fontSize="small"
+          />
+
+          Nova peça
         </Link>}
       </div>
 
@@ -145,7 +158,9 @@ export default function PecasLista() {
               Situação
             </th>
 
-            <th />
+            <th className="acoes">
+              Ações
+            </th>
           </tr>
         </thead>
 
@@ -173,27 +188,39 @@ export default function PecasLista() {
               </td>
 
               <td>
-                <span className={`etiqueta ${peca.estoque_baixo ? 'estoque-baixo' : ''}`}>
-                  {peca.estoque_baixo ? 'Baixo' : 'OK'}
-                </span>
+                <SituacaoPonto
+                  texto={peca.estoque_baixo ? 'Baixo' : 'OK'}
+                  cor={peca.estoque_baixo ? 'vermelho' : 'azul'}
+                />
               </td>
 
               <td className="acoes">
-                {podeEditar && <Link to={`/pecas/${peca.id}`}>
-                  Editar
-                </Link>}
+                {podeEditar && <BotaoIcone
+                  to={`/pecas/${peca.id}`}
+                  icone={EditOutlined}
+                  rotulo="Editar"
+                />}
 
-                {pode('ADMIN') && (
-                  <button
-                    className="link perigo"
-                    onClick={() => excluir(peca)}
-                  >
-                    Excluir
-                  </button>
-                )}
+                {pode('ADMIN') && <BotaoIcone
+                  icone={DeleteForeverOutlined}
+                  rotulo="Excluir"
+                  perigo
+                  onClick={() => excluir(peca)}
+                />}
               </td>
             </tr>
           ))}
+
+          {carregando && resp.dados.length === 0 && (
+            <tr>
+              <td
+                colSpan="5"
+                className="vazio"
+              >
+                <Carregando />
+              </td>
+            </tr>
+          )}
 
           {!carregando && resp.dados.length === 0 && (
             <tr>

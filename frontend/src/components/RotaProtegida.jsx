@@ -1,6 +1,6 @@
 import SemPermissao from './SemPemissao.jsx';
+import { useAuth } from '../contexts/index.js';
 import { Navigate, Outlet } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext.jsx';
 
 /* Libera as rotas filhas só para usuário logado */
 export default function RotaProtegida({ perfis }) {

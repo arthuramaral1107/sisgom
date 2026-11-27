@@ -89,6 +89,7 @@ export const api = {
     }
   ),
   me: () => requisicao('/auth/me'),
+  painel: () => requisicao('/painel'),
   clientes: {
     listar: (params) => requisicao(`/clientes${qs(params)}`),
     buscar: (id) => requisicao(`/clientes/${id}`),

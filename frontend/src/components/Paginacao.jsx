@@ -7,7 +7,7 @@ export default function Paginacao({ pagina, limite, total, aoMudar }) {
   return (
     <div className="paginacao">
       <span>
-        {total === 0 ? 'Nenhum registro' : `Mostrando ${inicio}–${fim} de ${total} registros`}
+        {total === 0 ? 'Nenhum registro' : `Mostrando ${inicio} - ${fim} de ${total} registros`}
       </span>
 
       <div>

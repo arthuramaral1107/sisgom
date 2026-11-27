@@ -13,6 +13,28 @@ export function useDebounce(valor, ms = 350) {
   return atual;
 };
 
+/* Diz se uma espera passou do tempo normal */
+export function useDemora(ativo, ms = 4000) {
+  const [demorando, setDemorando] = useState(false);
+
+  useEffect(() => {
+    if (!ativo) {
+      setDemorando(false);
+
+      return;
+    }
+
+    const t = setTimeout(() => setDemorando(true), ms);
+
+    return () => clearTimeout(t);
+  }, [
+    ativo,
+    ms
+  ]);
+
+  return demorando;
+};
+
 /* Texto exibido para cada perfil de usuário */
 export const ROTULOS_PERFIL = {
   ADMIN: 'Administrador',

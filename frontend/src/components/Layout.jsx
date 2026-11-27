@@ -1,21 +1,30 @@
-import logo from '../assets/logo-sisgom.svg';
-import { useAuth } from '../contexts/AuthContext.jsx';
-import BuildOutlined from '@mui/icons-material/BuildOutlined';
-import LogoutOutlined from '@mui/icons-material/LogoutOutlined';
+import {
+  AssignmentOutlined,
+  CommuteRounded,
+  ConstructionRounded,
+  DashboardOutlined,
+  Inventory2Outlined,
+  LogoutOutlined,
+  ManageAccountsOutlined,
+  PeopleAltOutlined
+} from '../icones.js';
+import { logo } from '../assets/index.js';
+import { useAuth, useConfirmar } from '../contexts/index.js';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import PeopleAltOutlined from '@mui/icons-material/PeopleAltOutlined';
-import AssignmentOutlined from '@mui/icons-material/AssignmentOutlined';
-import Inventory2Outlined from '@mui/icons-material/Inventory2Outlined';
-import DirectionsCarOutlined from '@mui/icons-material/DirectionsCarOutlined';
-import ManageAccountsOutlined from '@mui/icons-material/ManageAccountsOutlined';
 
 /* Estrutura das telas - menu lateral, cabeçalho com o usuário e área de conteúdo */
 export default function Layout() {
   const { usuario, sair, pode } = useAuth();
   const navegar = useNavigate();
+  const confirmar = useConfirmar();
 
-  const aoSair = () => {
+  const aoSair = async () => {
+    const confirmado = await confirmar('Deseja realmente sair do sistema?');
+
+    if (!confirmado) return;
+
     sair();
+
     navegar('/login');
   };
 
@@ -41,51 +50,60 @@ export default function Layout() {
         </div>
 
         <nav>
+          <NavLink to="/painel">
+            <DashboardOutlined fontSize="small" />
+
+            Dashboard
+          </NavLink>
+
+          <NavLink to="/os">
+            <AssignmentOutlined
+              fontSize="small"
+            />
+
+            Ordens de Serviço
+          </NavLink>
+
           <NavLink to="/clientes">
-            <PeopleAltOutlined fontSize="small" />
+            <PeopleAltOutlined
+              fontSize="small"
+            />
 
             Clientes
           </NavLink>
 
           <NavLink to="/veiculos">
-            <DirectionsCarOutlined fontSize="small" />
+            <CommuteRounded
+              fontSize="small"
+            />
 
             Veículos
           </NavLink>
 
-          <NavLink to="/os">
-            <AssignmentOutlined fontSize="small" />
-
-            Ordens de Serviço
-          </NavLink>
-
           <NavLink to="/servicos">
-            <BuildOutlined fontSize="small" />
+            <ConstructionRounded
+              fontSize="small"
+            />
 
             Serviços
           </NavLink>
 
           <NavLink to="/pecas">
-            <Inventory2Outlined fontSize="small" />
+            <Inventory2Outlined
+              fontSize="small"
+            />
 
             Peças
           </NavLink>
 
           {pode('ADMIN') && <NavLink to="/usuarios">
-            <ManageAccountsOutlined fontSize="small" />
+            <ManageAccountsOutlined
+              fontSize="small"
+            />
 
             Usuários
           </NavLink>}
         </nav>
-
-        <button
-          className="link-sair"
-          onClick={aoSair}
-        >
-          <LogoutOutlined fontSize="small" />
-
-          Sair
-        </button>
       </aside>
 
       <div className="conteudo">
@@ -93,6 +111,15 @@ export default function Layout() {
           <span>
             {usuario.nome} <em>({usuario.perfil})</em>
           </span>
+
+          <button
+            className="botao-sair"
+            onClick={aoSair}
+          >
+            <LogoutOutlined fontSize="small" />
+
+            Sair
+          </button>
         </header>
 
         <main className="pagina">

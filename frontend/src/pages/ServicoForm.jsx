@@ -1,9 +1,8 @@
 import { api } from '../services/api.js';
 import { useEffect, useState } from 'react';
-import Campo from '../components/Campo.jsx';
 import { detalhesParaObjeto } from '../hooks.js';
-import ModalAlerta from '../components/ModalAlerta.jsx';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Campo, ModalAlerta } from '../components/index.js';
 
 /* Valores iniciais do formulário */
 const VAZIO = {
@@ -101,18 +100,18 @@ export default function ServicoForm() {
 
         <div className="botoes">
           <button
-            className="btn primario"
-            disabled={enviando}
-          >
-            {enviando ? 'Salvando...' : 'Salvar'}
-          </button>
-
-          <button
             type="button"
             className="btn"
             onClick={() => navegar('/servicos')}
           >
             Cancelar
+          </button>
+
+          <button
+            className="btn primario"
+            disabled={enviando}
+          >
+            {enviando ? 'Salvando...' : 'Salvar'}
           </button>
         </div>
       </form>

@@ -45,7 +45,7 @@ export default function ModalConfirmacao({
                     </button>
 
                     <button
-                        className={`btn ${perigo ? 'perigo' : 'primario'}`}
+                        className="btn primario"
                         onClick={() => aoResponder(true)}
                         autoFocus={!perigo}
                     >
